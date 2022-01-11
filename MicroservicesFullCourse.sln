@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuzmichInc.Microservices", "MicroserviceFullCourse\KuzmichInc.Microservices.csproj", "{2EDD0347-E656-4243-A24C-2228F6FC89B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KuzmichInc.Microservices", "MicroserviceFullCourse\KuzmichInc.Microservices.csproj", "{2EDD0347-E656-4243-A24C-2228F6FC89B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KuzmichInc.Microservices.PlatformService", "KuzmichInc.Microservices.Platform\KuzmichInc.Microservices.PlatformService.csproj", "{1748D598-90E7-4533-8DBD-EE16F97B458D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{2EDD0347-E656-4243-A24C-2228F6FC89B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EDD0347-E656-4243-A24C-2228F6FC89B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EDD0347-E656-4243-A24C-2228F6FC89B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1748D598-90E7-4533-8DBD-EE16F97B458D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1748D598-90E7-4533-8DBD-EE16F97B458D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1748D598-90E7-4533-8DBD-EE16F97B458D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1748D598-90E7-4533-8DBD-EE16F97B458D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
