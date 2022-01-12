@@ -4,11 +4,11 @@ using KuzmichInc.Microservices.PlatformService.Models;
 
 namespace KuzmichInc.Microservices.PlatformService.Profiles
 {
-    public class DataAccessProfile : Profile
+    public class PlatformProfiles : Profile
     {
-        public DataAccessProfile()
+        public PlatformProfiles()
         {
-            CreateMap<Platform, PlatformDto>()
+            CreateMap<PlatformResponseDto, Platform>()
                 .ReverseMap();
         }
     }

@@ -1,23 +1,19 @@
 using AutoMapper;
 using KuzmichInc.Microservices.PlatformService.Data;
+using KuzmichInc.Microservices.PlatformService.Dtos;
 using KuzmichInc.Microservices.PlatformService.Models;
 using KuzmichInc.Microservices.PlatformService.Profiles;
 using KuzmichInc.Microservices.PlatformService.Repositories;
-using KuzmichInc.Microservices.PlatformService.Repositories.Base;
+using KuzmichInc.Microservices.PlatformService.Services;
+using KuzmichInc.Microservices.Repositories;
+using KuzmichInc.Microservices.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.PlatformService
 {
@@ -36,12 +32,12 @@ namespace KuzmichInc.Microservices.PlatformService
             services.AddDbContext<PlatformContext>(options => options.UseInMemoryDatabase("InMemory"));
 
             services.AddScoped<IRepository<Platform>, PlatformRepository>();
+            services.AddScoped<IDtoService<PlatformResponseDto>, PlatformBusinessService>();
 
             services.AddControllers();
             services.AddAutoMapper(configuration => configuration.AddProfiles(new Profile[]
             {
-                new BusinessLayerProfile(),
-                new DataAccessProfile()
+                new PlatformProfiles()
             }));
             services.AddSwaggerGen(c =>
             {
@@ -69,8 +65,6 @@ namespace KuzmichInc.Microservices.PlatformService
             {
                 endpoints.MapControllers();
             });
-
-            // app.InitContextAsync().GetAwaiter(); // transfer it to program.cs
         }
     }
 }

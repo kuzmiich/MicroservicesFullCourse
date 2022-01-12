@@ -1,3 +1,4 @@
+using KuzmichInc.Microservices.PlatformService.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System.Threading.Tasks;
@@ -8,7 +9,11 @@ namespace KuzmichInc.Microservices.PlatformService
     {
         public static async Task Main(string[] args)
         {
-            await CreateHostBuilder(args).Build().RunAsync();
+            var host = CreateHostBuilder(args).Build();
+
+            await host.InitContextAsync();
+
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
