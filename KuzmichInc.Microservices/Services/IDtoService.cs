@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Services
 {
-    public interface IDtoService<TDto> where TDto : class
+    public interface IDtoService<TResponseDto, TRequestDto> : IDisposable, IAsyncDisposable
+        where TResponseDto : class
+        where TRequestDto : class
     {
-        Task<IEnumerable<TDto>> GetAll();
+        Task<IEnumerable<TResponseDto>> GetAll();
 
-        Task<TDto> GetById(int id);
+        Task<TResponseDto> GetById(int id);
 
-        Task<TDto> Update(TDto item);
+        Task<TResponseDto> Update(TResponseDto item);
 
-        Task<TDto> Create(TDto item);
+        Task<TResponseDto> Create(TRequestDto item);
 
         Task Delete(int id);
     }

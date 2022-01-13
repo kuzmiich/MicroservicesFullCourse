@@ -16,10 +16,11 @@ namespace KuzmichInc.Microservices.PlatformService.Data
             await using var serviceScope = app.Services.CreateAsyncScope();
 
             var context = serviceScope.ServiceProvider.GetService<PlatformContext>();
-            await SeedDataAsync(context);
+            await SeedPlatformAsync(context);
+            await context.SaveChangesAsync();
         }
 
-        private static Task SeedDataAsync(PlatformContext context)
+        private static Task SeedPlatformAsync(PlatformContext context)
         {
             if(!context.Platforms.Any())
             {
@@ -31,8 +32,9 @@ namespace KuzmichInc.Microservices.PlatformService.Data
                     new Platform() { Name = "Kubernetes", Publisher="Cloud Native Computing Foundation", Cost = "Free"}
                 );
             }
-            
-            return Task.Run(() => Console.WriteLine("--> We already have data"));
+
+            Console.WriteLine("--> We already have data");
+            return Task.FromResult(false);
         }
     }
 }

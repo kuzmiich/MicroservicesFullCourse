@@ -32,7 +32,7 @@ namespace KuzmichInc.Microservices.PlatformService
             services.AddDbContext<PlatformContext>(options => options.UseInMemoryDatabase("InMemory"));
 
             services.AddScoped<IRepository<Platform>, PlatformRepository>();
-            services.AddScoped<IDtoService<PlatformResponseDto>, PlatformBusinessService>();
+            services.AddScoped<IDtoService<PlatformResponseDto, PlatformRequestDto>, PlatformBusinessService>();
 
             services.AddControllers();
             services.AddAutoMapper(configuration => configuration.AddProfiles(new Profile[]
@@ -63,7 +63,7 @@ namespace KuzmichInc.Microservices.PlatformService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Repositories
 {
-    public class BaseRepository<TContext, TEntity> : IRepository<TEntity>, IDisposable, IAsyncDisposable
+    public class BaseRepository<TContext, TEntity> : IRepository<TEntity>
         where TContext : DbContext
         where TEntity : class
     {
-        private bool _disposed;
-        private readonly TContext _context;
         protected readonly DbSet<TEntity> Set;
+        private readonly TContext _context;
+
+        private bool _disposed;
+        private readonly object _locker = new ();
 
         public BaseRepository(TContext context)
         {
@@ -20,12 +22,12 @@ namespace KuzmichInc.Microservices.Repositories
             Set = _context.Set<TEntity>();
         }
 
-        public IQueryable<TEntity> GetAll()
+        public virtual IQueryable<TEntity> GetAll()
         {
             return Set.AsNoTracking();
         }
 
-        public async Task<TEntity> GetById(int id)
+        public virtual async Task<TEntity> GetById(int id)
         {
             RepositoryExceptionHelper.IsIdValid(id);
 
@@ -36,7 +38,7 @@ namespace KuzmichInc.Microservices.Repositories
             return foundEntity;
         }
 
-        public async Task<TEntity> Create(TEntity entity)
+        public virtual async Task<TEntity> Create(TEntity entity)
         {
             RepositoryExceptionHelper.IsEntityExists(entity, typeof(TEntity).FullName);
 
@@ -44,18 +46,18 @@ namespace KuzmichInc.Microservices.Repositories
 
             return addedEntity;
         }
-        public Task SaveChanges()
+        public virtual Task SaveChanges()
         {
             return _context.SaveChangesAsync();
         }
 
-        public TEntity Update(TEntity entity)
+        public virtual TEntity Update(TEntity entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
             return entity;
         }
 
-        public async Task Delete(int id)
+        public virtual async Task Delete(int id)
         {
             var deletedEntity = await GetById(id);
 
@@ -67,25 +69,34 @@ namespace KuzmichInc.Microservices.Repositories
 
         #region Dispose Repository
 
+        public ValueTask DisposeAsync()
+        {
+            return _context.DisposeAsync();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         protected void Dispose(bool disposing)
         {
             if (!_disposed)
             {
-                if (disposing)
-                    _context.Dispose();
+                lock (_locker)
+                {
+                    if (disposing)
+                        DisposeResourses();
+                }
             }
 
             _disposed = true;
         }
 
-        public void Dispose()
+        private void DisposeResourses()
         {
             _context.Dispose();
-        }
-
-        public ValueTask DisposeAsync()
-        {
-            return _context.DisposeAsync();
         }
 
         #endregion

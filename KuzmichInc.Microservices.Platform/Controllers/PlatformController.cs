@@ -13,25 +13,25 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
     [ApiController]
     public class PlatformController : ControllerBase
     {
-        private readonly IDtoService<PlatformResponseDto> _service;
+        private readonly IDtoService<PlatformResponseDto, PlatformRequestDto> _service;
         private readonly IMapper _mapper;
 
-        public PlatformController(IDtoService<PlatformResponseDto> service, IMapper mapper)
+        public PlatformController(IDtoService<PlatformResponseDto, PlatformRequestDto> service, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Platform>>> GetPlatformsAsync()
+        public async Task<ActionResult<IEnumerable<PlatformResponseDto>>> GetPlatformsAsync()
         {
             var platforms = await _service.GetAll();
 
             return Ok(platforms);
         }
 
-        [HttpGet("{id}", Name = "GetPlatformById")]
-        public async Task<ActionResult<Platform>> GetPlatformByIdAsync(int id)
+        [HttpGet("/{id}", Name = "GetPlatformByIdAsync")]
+        public async Task<ActionResult<PlatformResponseDto>> GetPlatformByIdAsync(int id)
         {
             var platform = await _service.GetById(id);
             if (platform is null)
@@ -45,42 +45,40 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PlatformResponseDto>> CreatePlatformAsync(Platform platform)
+        public async Task<ActionResult<PlatformResponseDto>> CreatePlatformAsync(PlatformRequestDto platform)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var mappedPlatform = _mapper.Map<PlatformResponseDto>(platform);
-            var platformDto = await _service.Create(mappedPlatform);
+            var platformResponseDto = await _service.Create(platform);
             
-            return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { Id = platform.Id }, platformDto);
+            return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { platformResponseDto.Id }, platformResponseDto);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PlatformResponseDto>> UpdatePlatformAsync(Platform platform)
+        public async Task<ActionResult<PlatformResponseDto>> UpdatePlatformAsync(PlatformResponseDto platform)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var mappedPlatform = _mapper.Map<PlatformResponseDto>(platform);
-            var platformDto = await _service.Update(mappedPlatform);
+            var platformResponseDto = await _service.Update(platform);
 
-            return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { Id = platform.Id }, platformDto);
+            return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { platformResponseDto.Id }, platformResponseDto);
         }
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PlatformResponseDto>> DeletePlatformAsync(int id)
         {
-            var platformDto = await _service.GetById(id);
+            var platformResponseDto = await _service.GetById(id);
 
             await _service.Delete(id);
 
-            return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { Id = id }, platformDto);
+            return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { Id = id }, platformResponseDto);
         }
     }
 }

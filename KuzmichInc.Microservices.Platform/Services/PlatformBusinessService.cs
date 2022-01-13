@@ -6,7 +6,7 @@ using KuzmichInc.Microservices.Services;
 
 namespace KuzmichInc.Microservices.PlatformService.Services
 {
-    public class PlatformBusinessService : BaseService<PlatformResponseDto, Platform>
+    public class PlatformBusinessService : BaseService<PlatformResponseDto, PlatformRequestDto, Platform>
     {
         public PlatformBusinessService(IRepository<Platform> repository, IMapper mapper) 
             : base(repository, mapper)

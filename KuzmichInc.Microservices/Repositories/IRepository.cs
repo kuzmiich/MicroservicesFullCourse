@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Repositories
 {
-    public interface IRepository<T>
+    public interface IRepository<T> : IDisposable, IAsyncDisposable
     {
         IQueryable<T> GetAll();
 

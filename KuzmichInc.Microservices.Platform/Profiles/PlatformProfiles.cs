@@ -10,6 +10,9 @@ namespace KuzmichInc.Microservices.PlatformService.Profiles
         {
             CreateMap<PlatformResponseDto, Platform>()
                 .ReverseMap();
+
+            CreateMap<PlatformRequestDto, Platform>()
+                .ReverseMap();
         }
     }
 }
