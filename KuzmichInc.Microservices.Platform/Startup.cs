@@ -63,7 +63,7 @@ namespace KuzmichInc.Microservices.PlatformService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
             });
         }
     }

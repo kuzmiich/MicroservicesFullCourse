@@ -69,10 +69,7 @@ namespace KuzmichInc.Microservices.Repositories
 
         #region Dispose Repository
 
-        public ValueTask DisposeAsync()
-        {
-            return _context.DisposeAsync();
-        }
+        public ValueTask DisposeAsync() => _context.DisposeAsync();
 
         public void Dispose()
         {
