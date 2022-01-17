@@ -30,7 +30,7 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
             return Ok(platforms);
         }
 
-        [HttpGet("/{id}", Name = "GetPlatformByIdAsync")]
+        [HttpGet("{id}", Name = "GetPlatformByIdAsync")]
         public async Task<ActionResult<PlatformResponseDto>> GetPlatformByIdAsync(int id)
         {
             var platform = await _service.GetById(id);

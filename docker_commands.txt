@@ -1,0 +1,8 @@
+# build services
+docker build -t opna/platformservice -f Dockerfile_PlatformService .
+
+# run
+docker run -p 8080:80 image_id
+
+# push 
+docker push image_id
