@@ -29,7 +29,9 @@ namespace KuzmichInc.Microservices.PlatformService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<PlatformContext>(options => options.UseInMemoryDatabase("InMemory"));
+            services.AddDbContext<PlatformContext>(options => 
+                options.UseInMemoryDatabase("InMemory"),
+                ServiceLifetime.Scoped);
 
             services.AddScoped<IRepository<Platform>, PlatformRepository>();
             services.AddScoped<IDtoService<PlatformResponseDto, PlatformRequestDto>, PlatformBusinessService>();
@@ -39,6 +41,7 @@ namespace KuzmichInc.Microservices.PlatformService
             {
                 new PlatformProfiles()
             }));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "KuzmichInc.Microservices.Platform", Version = "v1" });
@@ -58,8 +61,6 @@ namespace KuzmichInc.Microservices.PlatformService
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
