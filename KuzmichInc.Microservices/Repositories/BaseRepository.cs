@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Repositories
 {
-    public class BaseRepository<TContext, TEntity> : IRepository<TEntity>
+    public abstract class BaseRepository<TContext, TEntity> : IUnitOfWorkRepository<TEntity>
         where TContext : DbContext
         where TEntity : class
     {
@@ -27,7 +27,7 @@ namespace KuzmichInc.Microservices.Repositories
             return Set.AsNoTracking();
         }
 
-        public virtual async Task<TEntity> GetById(int id)
+        public virtual async Task<TEntity> GetByIdAsync(int id)
         {
             RepositoryExceptionHelper.IsIdValid(id);
 
@@ -38,7 +38,7 @@ namespace KuzmichInc.Microservices.Repositories
             return foundEntity;
         }
 
-        public virtual async Task<TEntity> Create(TEntity entity)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
             RepositoryExceptionHelper.IsEntityExists(entity, typeof(TEntity).FullName);
 
@@ -46,10 +46,17 @@ namespace KuzmichInc.Microservices.Repositories
 
             return addedEntity;
         }
-        public virtual Task SaveChanges()
+
+        public virtual async Task DeleteAsync(int id)
         {
-            return _context.SaveChangesAsync();
+            var deletedEntity = await GetByIdAsync(id);
+
+            RepositoryExceptionHelper.IsEntityExists(deletedEntity, typeof(TEntity).FullName);
+
+            _context.Remove(deletedEntity);
         }
+
+        public virtual Task SaveChangesAsync() => _context.SaveChangesAsync();
 
         public virtual TEntity Update(TEntity entity)
         {
@@ -57,15 +64,36 @@ namespace KuzmichInc.Microservices.Repositories
             return entity;
         }
 
-        public virtual async Task Delete(int id)
+        public TEntity GetById(int id)
         {
-            var deletedEntity = await GetById(id);
+            RepositoryExceptionHelper.IsIdValid(id);
+
+            var foundEntity = Set.Find(id);
+
+            RepositoryExceptionHelper.IsEntityExists(foundEntity, typeof(TEntity).FullName);
+
+            return foundEntity;
+        }
+
+        public TEntity Create(TEntity entity)
+        {
+            RepositoryExceptionHelper.IsEntityExists(entity, typeof(TEntity).FullName);
+
+            var addedEntity = _context.Add(entity).Entity;
+
+            return addedEntity;
+        }
+
+        public void Delete(int id)
+        {
+            var deletedEntity = GetById(id);
 
             RepositoryExceptionHelper.IsEntityExists(deletedEntity, typeof(TEntity).FullName);
 
             _context.Remove(deletedEntity);
         }
 
+        public bool SaveChanges() => _context.SaveChanges() > 0;
 
         #region Dispose Repository
 

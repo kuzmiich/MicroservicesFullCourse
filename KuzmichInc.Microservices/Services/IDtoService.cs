@@ -4,18 +4,18 @@ using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Services
 {
-    public interface IDtoService<TResponseDto, TRequestDto> : IDisposable, IAsyncDisposable
+    public interface IDtoService<TResponseDto, TRequestDto> : IDisposable
         where TResponseDto : class
         where TRequestDto : class
     {
-        Task<IEnumerable<TResponseDto>> GetAll();
+        List<TResponseDto> GetAll();
 
-        Task<TResponseDto> GetById(int id);
+        TResponseDto GetById(int id);
 
-        Task<TResponseDto> Update(TResponseDto item);
+        TResponseDto Update(TResponseDto item);
 
-        Task<TResponseDto> Create(TRequestDto item);
+        TResponseDto Create(TRequestDto item);
 
-        Task Delete(int id);
+        void Delete(int id);
     }
 }

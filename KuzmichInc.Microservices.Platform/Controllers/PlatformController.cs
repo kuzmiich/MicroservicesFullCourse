@@ -13,10 +13,10 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
     [ApiController]
     public class PlatformController : ControllerBase
     {
-        private readonly IDtoService<PlatformResponseDto, PlatformRequestDto> _service;
+        private readonly IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto> _service;
         private readonly IMapper _mapper;
 
-        public PlatformController(IDtoService<PlatformResponseDto, PlatformRequestDto> service, IMapper mapper)
+        public PlatformController(IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto> service, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;
@@ -25,7 +25,7 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlatformResponseDto>>> GetPlatformsAsync()
         {
-            var platforms = await _service.GetAll();
+            var platforms = await _service.GetAllAsync();
 
             return Ok(platforms);
         }
@@ -33,7 +33,7 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
         [HttpGet("{id}", Name = "GetPlatformByIdAsync")]
         public async Task<ActionResult<PlatformResponseDto>> GetPlatformByIdAsync(int id)
         {
-            var platform = await _service.GetById(id);
+            var platform = await _service.GetByIdAsync(id);
             if (platform is null)
             {
                 return NotFound();
@@ -51,7 +51,7 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var platformResponseDto = await _service.Create(platform);
+            var platformResponseDto = await _service.CreateAsync(platform);
             
             return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { platformResponseDto.Id }, platformResponseDto);
         }
@@ -65,7 +65,7 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var platformResponseDto = await _service.Update(platform);
+            var platformResponseDto = await _service.UpdateAsync(platform);
 
             return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { platformResponseDto.Id }, platformResponseDto);
         }
@@ -74,9 +74,9 @@ namespace KuzmichInc.Microservices.PlatformService.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PlatformResponseDto>> DeletePlatformAsync(int id)
         {
-            var platformResponseDto = await _service.GetById(id);
+            var platformResponseDto = await _service.GetByIdAsync(id);
 
-            await _service.Delete(id);
+            await _service.DeleteAsync(id);
 
             return CreatedAtRoute(nameof(GetPlatformByIdAsync), new { Id = id }, platformResponseDto);
         }

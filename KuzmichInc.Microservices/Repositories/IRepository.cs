@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Repositories
 {
-    public interface IRepository<T> : IDisposable, IAsyncDisposable
+    public interface IRepository<T> : IDisposable
     {
         IQueryable<T> GetAll();
 
-        Task<T> GetById(int id);
+        T GetById(int id);
 
-        Task<T> Create(T entity);
+        T Create(T entity);
 
         T Update(T entity);
 
-        Task Delete(int id);
+        void Delete(int id);
 
-        Task SaveChanges();
+        bool SaveChanges();
     }
 }

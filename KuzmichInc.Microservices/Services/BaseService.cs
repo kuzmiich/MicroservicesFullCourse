@@ -6,65 +6,111 @@ using System.Threading.Tasks;
 
 namespace KuzmichInc.Microservices.Services
 {
-    public abstract class BaseService<TResponseDto, TRequest, TEntity> : IDtoService<TResponseDto, TRequest>
+    public abstract class BaseService<TResponseDto, TRequestDto, TEntity> :
+        IUnitOfWorkService<TResponseDto, TRequestDto>
         where TResponseDto : class
-        where TRequest : class
+        where TRequestDto : class
         where TEntity : class
     {
-        protected readonly IRepository<TEntity> _repository;
+        protected readonly IUnitOfWorkRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
 
-        public BaseService(IRepository<TEntity> repository, IMapper mapper)
+        public BaseService(IUnitOfWorkRepository<TEntity> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public virtual async Task<IEnumerable<TResponseDto>> GetAll()
+        public virtual async Task<List<TResponseDto>> GetAllAsync()
         {
             var entities = await _repository.GetAll().ToListAsync();
 
-            return _mapper.Map<IEnumerable<TResponseDto>>(entities);
+            return _mapper.Map<List<TResponseDto>>(entities);
         }
 
-        public virtual async Task<TResponseDto> GetById(int id)
+        public virtual async Task<TResponseDto> GetByIdAsync(int id)
         {
-            var entity = await _repository.GetById(id);
+            var entity = await _repository.GetByIdAsync(id);
 
             return _mapper.Map<TResponseDto>(entity);
         }
 
-        public virtual async Task<TResponseDto> Update(TResponseDto item)
+        public virtual async Task<TResponseDto> UpdateAsync(TResponseDto item)
         {
             var mappedEntity = _mapper.Map<TEntity>(item);
             var updatedEntity = _repository.Update(mappedEntity);
 
-            await _repository.SaveChanges();
+            await _repository.SaveChangesAsync();
 
             return _mapper.Map<TResponseDto>(updatedEntity);
         }
 
-        public virtual async Task<TResponseDto> Create(TRequest item)
+        public virtual async Task<TResponseDto> CreateAsync(TRequestDto item)
         {
             var entity = _mapper.Map<TEntity>(item);
 
-            var createdEntity = await _repository.Create(entity);
-            await _repository.SaveChanges();
+            var createdEntity = await _repository.CreateAsync(entity);
+            await _repository.SaveChangesAsync();
+
+            return _mapper.Map<TResponseDto>(createdEntity);
+
+        }
+
+        public virtual async Task DeleteAsync(int id)
+        {
+            await _repository.DeleteAsync(id);
+            await _repository.SaveChangesAsync();
+        }
+
+        public List<TResponseDto> GetAll()
+        {
+            var entities = _repository.GetAll();
+
+            return _mapper.Map<List<TResponseDto>>(entities);
+        }
+
+        public TResponseDto GetById(int id)
+        {
+            var entity = _repository.GetById(id);
+
+            return _mapper.Map<TResponseDto>(entity);
+        }
+
+        public TResponseDto Update(TResponseDto item)
+        {
+            var mappedEntity = _mapper.Map<TEntity>(item);
+            var updatedEntity = _repository.Update(mappedEntity);
+
+            _repository.SaveChanges();
+
+            return _mapper.Map<TResponseDto>(updatedEntity);
+        }
+
+        public TResponseDto Create(TRequestDto item)
+        {
+            var entity = _mapper.Map<TEntity>(item);
+
+            var createdEntity = _repository.Create(entity);
+            _repository.SaveChanges();
 
             return _mapper.Map<TResponseDto>(createdEntity);
         }
 
-        public virtual async Task Delete(int id)
+        public void Delete(int id)
         {
-            await _repository.Delete(id);
-            await _repository.SaveChanges();
+            _repository.Delete(id);
+            _repository.SaveChanges();
         }
+
 
         #region Dispose Service
 
-        public void Dispose() => _repository.Dispose();
-
         public ValueTask DisposeAsync() => _repository.DisposeAsync();
+
+        public void Dispose()
+        {
+            throw new System.NotImplementedException();
+        }
 
         #endregion
     }
