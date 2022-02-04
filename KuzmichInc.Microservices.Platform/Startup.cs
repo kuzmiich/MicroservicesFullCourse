@@ -33,8 +33,8 @@ namespace KuzmichInc.Microservices.PlatformService
                 options.UseInMemoryDatabase("InMemory"),
                 ServiceLifetime.Scoped);
 
-            services.AddScoped<IRepository<Platform>, PlatformRepository>();
-            services.AddScoped<IDtoService<PlatformResponseDto, PlatformRequestDto>, PlatformBusinessService>();
+            services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
+            services.AddScoped<IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto>, PlatformBusinessService>();
 
             services.AddControllers();
             services.AddAutoMapper(configuration => configuration.AddProfiles(new Profile[]
