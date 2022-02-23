@@ -107,10 +107,7 @@ namespace Microservices.Services
 
         public ValueTask DisposeAsync() => _repository.DisposeAsync();
 
-        public void Dispose()
-        {
-            throw new System.NotImplementedException();
-        }
+        public void Dispose() => _repository.Dispose();
 
         #endregion
     }

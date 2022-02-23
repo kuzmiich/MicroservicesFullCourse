@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microservices.PlatformService.Models;
 
-namespace Microservices.PlatformService.Data
+namespace Microservices.CommandService.Data
 {
-    public static class PlatformContextInitialization
+    public static class CommandContextInitialization
     {
         public static async Task InitContextAsync(this IHost app)
         {
@@ -22,14 +18,14 @@ namespace Microservices.PlatformService.Data
 
         private static Task SeedPlatformAsync(PlatformContext context)
         {
-            if(!context.Platforms.Any())
+            if (!context.Platforms.Any())
             {
                 Console.WriteLine("--> Seeding data...");
 
                 return context.Platforms.AddRangeAsync(
-                    new Platform() { Name = ".Net", Publisher="Microsoft", Cost = "Free"},
-                    new Platform() { Name = "Sql Server Express", Publisher="Microsoft", Cost = "Free"},
-                    new Platform() { Name = "Kubernetes", Publisher="Cloud Native Computing Foundation", Cost = "Free"}
+                    new Platform() { Name = ".Net", Publisher = "Microsoft", Cost = "Free" },
+                    new Platform() { Name = "Sql Server Express", Publisher = "Microsoft", Cost = "Free" },
+                    new Platform() { Name = "Kubernetes", Publisher = "Cloud Native Computing Foundation", Cost = "Free" }
                 );
             }
 
