@@ -1,0 +1,5 @@
+# create deployment 
+kubectl apply -f platforms-deployment.yaml
+
+# delete deployment
+kubectl delete deployment platforms-deployment

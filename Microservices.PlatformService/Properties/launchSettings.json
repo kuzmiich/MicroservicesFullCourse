@@ -19,14 +19,12 @@
     },
     "KuzmichInc.Microservices.Platform": {
       "commandName": "Project",
-      "workingDirectory": "C:\\Users\\240Dell\\source\\repos\\KuzmichInc.Microservices\\KuzmichInc.Microservices.Platform\\bin\\Debug\\net5.0",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,      
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      }
     },
     "Docker": {
       "commandName": "Docker",

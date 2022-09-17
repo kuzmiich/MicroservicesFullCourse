@@ -1,8 +1,22 @@
-# build services
+# build image
 docker build -t opna/platformservice -f Dockerfile_PlatformService .
 
 # run
-docker run -p 8080:80 image_id/image_name
+docker run -p 8080:80 opna/platformservice (image_id/image_name)
 
-# push 
-docker push image_id/image_name
+# stop
+docker stop opna/platformservice (image_id/image_name)
+
+# start
+docker start opna/platformservice (image_id/image_name)
+
+# push to https://hub.docker.com/
+docker push opna/platformservice (image_id/image_name)
+
+--- Clearing 
+
+# remove image
+docker rmi
+
+# remove container 
+docker rm

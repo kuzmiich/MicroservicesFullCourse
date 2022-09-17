@@ -6,17 +6,16 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Microservices.Platform/Microservices.PlatformService.csproj", "Microservices.Platform/"]
-COPY ["Microservices/Microservices.csproj", "Microservices/"]
-RUN dotnet restore "Microservices.Platform/Microservices.PlatformService.csproj"
+COPY ["Microservices.CommandService/Microservices.CommandService.csproj", "Microservices.CommandService/"]
+RUN dotnet restore "Microservices.Platform/Microservices.CommandService.csproj"
 COPY . .
-WORKDIR "/src/Microservices.Platform"
-RUN dotnet build "Microservices.PlatformService.csproj" -c Release -o /app/build
+WORKDIR "/src/Microservices.CommandService"
+RUN dotnet build "Microservices.CommandService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Microservices.PlatformService.csproj" -c Release -o /app/publish
+RUN dotnet publish "Microservices.CommandService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Microservices.PlatformService.dll"]
+ENTRYPOINT ["dotnet", "Microservices.CommandService.dll"]

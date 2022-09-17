@@ -5,29 +5,28 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microservices.CommandService.SyncDataServices.Http;
 using Microservices.PlatformService.Dtos;
 
 namespace Microservices.CommandsService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/c/[controller]")]
     [ApiController]
     public class PlatformController : ControllerBase
     {
-        private readonly IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto> _service;
+        private readonly ICommandDataClient _service;
         private readonly IMapper _mapper;
 
-        public PlatformController(IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto> service, IMapper mapper)
+        public PlatformController(ICommandDataClient service, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlatformResponseDto>>> GetPlatformsAsync()
+        public async Task<ActionResult<IEnumerable<PlatformResponseDto>>> GetPlatformsFiltered()
         {
-            var platforms = await _service.GetAllAsync();
-
-            return Ok(platforms);
+            
         }
     }
 }
