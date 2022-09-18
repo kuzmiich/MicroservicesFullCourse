@@ -23,10 +23,10 @@ namespace Microservices.CommandsService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlatformResponseDto>>> GetPlatformsFiltered()
+        [HttpPost]
+        public async Task<ActionResult> GetPlatformsFiltered()
         {
-            
+            return null;
         }
     }
 }

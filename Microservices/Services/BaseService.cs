@@ -6,108 +6,108 @@ using Microservices.Repositories;
 
 namespace Microservices.Services
 {
-    public abstract class BaseService<TResponseDto, TRequestDto, TEntity> :
-        IUnitOfWorkService<TResponseDto, TRequestDto>
-        where TResponseDto : class
-        where TRequestDto : class
+    public abstract class BaseService<TReadDto, TCreateDto, TEntity> :
+        IUnitOfWorkService<TReadDto, TCreateDto>
+        where TReadDto : class
+        where TCreateDto : class
         where TEntity : class
     {
-        protected readonly IUnitOfWorkRepository<TEntity> _repository;
-        protected readonly IMapper _mapper;
+        protected readonly IUnitOfWorkRepository<TEntity> Repository;
+        protected readonly IMapper Mapper;
 
         public BaseService(IUnitOfWorkRepository<TEntity> repository, IMapper mapper)
         {
-            _repository = repository;
-            _mapper = mapper;
+            Repository = repository;
+            Mapper = mapper;
         }
 
-        public virtual async Task<List<TResponseDto>> GetAllAsync()
+        public virtual async Task<List<TReadDto>> GetAllAsync()
         {
-            var entities = await _repository.GetAll().ToListAsync();
+            var entities = await Repository.GetAll().ToListAsync();
 
-            return _mapper.Map<List<TResponseDto>>(entities);
+            return Mapper.Map<List<TReadDto>>(entities);
         }
 
-        public virtual async Task<TResponseDto> GetByIdAsync(int id)
+        public virtual async Task<TReadDto> GetByIdAsync(int id)
         {
-            var entity = await _repository.GetByIdAsync(id);
+            var entity = await Repository.GetByIdAsync(id);
 
-            return _mapper.Map<TResponseDto>(entity);
+            return Mapper.Map<TReadDto>(entity);
         }
 
-        public virtual async Task<TResponseDto> UpdateAsync(TResponseDto item)
+        public virtual async Task<TReadDto> UpdateAsync(TReadDto item)
         {
-            var mappedEntity = _mapper.Map<TEntity>(item);
-            var updatedEntity = _repository.Update(mappedEntity);
+            var mappedEntity = Mapper.Map<TEntity>(item);
+            var updatedEntity = Repository.Update(mappedEntity);
 
-            await _repository.SaveChangesAsync();
+            await Repository.SaveChangesAsync();
 
-            return _mapper.Map<TResponseDto>(updatedEntity);
+            return Mapper.Map<TReadDto>(updatedEntity);
         }
 
-        public virtual async Task<TResponseDto> CreateAsync(TRequestDto item)
+        public virtual async Task<TReadDto> CreateAsync(TCreateDto item)
         {
-            var entity = _mapper.Map<TEntity>(item);
+            var entity = Mapper.Map<TEntity>(item);
 
-            var createdEntity = await _repository.CreateAsync(entity);
-            await _repository.SaveChangesAsync();
+            var createdEntity = await Repository.CreateAsync(entity);
+            await Repository.SaveChangesAsync();
 
-            return _mapper.Map<TResponseDto>(createdEntity);
+            return Mapper.Map<TReadDto>(createdEntity);
 
         }
 
         public virtual async Task DeleteAsync(int id)
         {
-            await _repository.DeleteAsync(id);
-            await _repository.SaveChangesAsync();
+            await Repository.DeleteAsync(id);
+            await Repository.SaveChangesAsync();
         }
 
-        public List<TResponseDto> GetAll()
+        public List<TReadDto> GetAll()
         {
-            var entities = _repository.GetAll();
+            var entities = Repository.GetAll();
 
-            return _mapper.Map<List<TResponseDto>>(entities);
+            return Mapper.Map<List<TReadDto>>(entities);
         }
 
-        public TResponseDto GetById(int id)
+        public TReadDto GetById(int id)
         {
-            var entity = _repository.GetById(id);
+            var entity = Repository.GetById(id);
 
-            return _mapper.Map<TResponseDto>(entity);
+            return Mapper.Map<TReadDto>(entity);
         }
 
-        public TResponseDto Update(TResponseDto item)
+        public TReadDto Update(TReadDto item)
         {
-            var mappedEntity = _mapper.Map<TEntity>(item);
-            var updatedEntity = _repository.Update(mappedEntity);
+            var mappedEntity = Mapper.Map<TEntity>(item);
+            var updatedEntity = Repository.Update(mappedEntity);
 
-            _repository.SaveChanges();
+            Repository.SaveChanges();
 
-            return _mapper.Map<TResponseDto>(updatedEntity);
+            return Mapper.Map<TReadDto>(updatedEntity);
         }
 
-        public TResponseDto Create(TRequestDto item)
+        public TReadDto Create(TCreateDto item)
         {
-            var entity = _mapper.Map<TEntity>(item);
+            var entity = Mapper.Map<TEntity>(item);
 
-            var createdEntity = _repository.Create(entity);
-            _repository.SaveChanges();
+            var createdEntity = Repository.Create(entity);
+            Repository.SaveChanges();
 
-            return _mapper.Map<TResponseDto>(createdEntity);
+            return Mapper.Map<TReadDto>(createdEntity);
         }
 
         public void Delete(int id)
         {
-            _repository.Delete(id);
-            _repository.SaveChanges();
+            Repository.Delete(id);
+            Repository.SaveChanges();
         }
 
 
         #region Dispose Service
 
-        public ValueTask DisposeAsync() => _repository.DisposeAsync();
+        public ValueTask DisposeAsync() => Repository.DisposeAsync();
 
-        public void Dispose() => _repository.Dispose();
+        public void Dispose() => Repository.Dispose();
 
         #endregion
     }

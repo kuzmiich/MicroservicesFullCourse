@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 
 namespace Microservices.Services
 {
-    public interface IDtoServiceAsync<TResponseDto, TRequestDto> : IAsyncDisposable
-        where TResponseDto : class
-        where TRequestDto : class
+    public interface IDtoServiceAsync<TReadDto, in TCreateDto> : IAsyncDisposable
+        where TReadDto : class
+        where TCreateDto : class
     {
-        Task<List<TResponseDto>> GetAllAsync();
+        Task<List<TReadDto>> GetAllAsync();
 
-        Task<TResponseDto> GetByIdAsync(int id);
+        Task<TReadDto> GetByIdAsync(int id);
 
-        Task<TResponseDto> UpdateAsync(TResponseDto item);
+        Task<TReadDto> UpdateAsync(TReadDto item);
 
-        Task<TResponseDto> CreateAsync(TRequestDto item);
+        Task<TReadDto> CreateAsync(TCreateDto item);
 
         Task DeleteAsync(int id);
     }

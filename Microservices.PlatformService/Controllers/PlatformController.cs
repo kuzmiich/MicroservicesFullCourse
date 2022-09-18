@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microservices.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microservices.PlatformService.Dtos;
+using Microservices.PlatformService.SyncDataServices.Http;
 
 namespace Microservices.PlatformService.Controllers
 {
@@ -12,72 +14,120 @@ namespace Microservices.PlatformService.Controllers
     [ApiController]
     public class PlatformController : ControllerBase
     {
-        private readonly IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto> _service;
-        private readonly IMapper _mapper;
+        private readonly ICommandDataClient _commandDataClient;
+        private readonly IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> _service;
 
-        public PlatformController(IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto> service, IMapper mapper)
+        public PlatformController(IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> service,
+            ICommandDataClient commandDataClient)
         {
             _service = service;
-            _mapper = mapper;
+            _commandDataClient = commandDataClient;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlatformResponseDto>>> GetPlatforms()
+        public async Task<ActionResult<IEnumerable<PlatformReadDto>>> GetPlatforms()
         {
             var platforms = await _service.GetAllAsync();
 
             return Ok(platforms);
         }
         
-        [HttpGet("{id:int}", Name = "Platform/")]
-        public async Task<ActionResult<PlatformResponseDto>> GetPlatformById(int id)
+        [HttpGet("{id:int}", Name = "GetPlatformById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PlatformReadDto>> GetPlatformById(int id)
         {
-            var platform = await _service.GetByIdAsync(id);
-            if (platform is null)
+            PlatformReadDto platform;
+            try
             {
-                return NotFound();
+                platform = await _service.GetByIdAsync(id);
             }
-
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    ArgumentNullException => NotFound(
+                        $"Exception type - {nameof(ArgumentNullException)} \nException message - {e.Message}"),
+                    ArgumentException => NotFound(
+                        $"Exception type - {nameof(ArgumentException)} \nException message - {e.Message}"),
+                    _ => BadRequest($"Exception type - {nameof(Exception)} \nException message - {e.Message}")
+                };
+            }
             return Ok(platform);
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PlatformResponseDto>> CreatePlatform(PlatformRequestDto platform)
+        public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platform)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var platformResponseDto = await _service.CreateAsync(platform);
+            var platformReadDto = await _service.CreateAsync(platform);
             
-            return CreatedAtRoute(nameof(GetPlatformById), new { platformResponseDto.Id }, platformResponseDto);
+            // Send Sync Message
+            try
+            {
+                await _commandDataClient.SendPlatformToCommand(platformReadDto);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"--> Could not send synchronously: {ex.Message}");
+            }
+            
+            return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PlatformResponseDto>> UpdatePlatform(PlatformResponseDto platform)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PlatformReadDto>> UpdatePlatform(PlatformReadDto platform)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
+            
+            PlatformReadDto platformReadDto;
+            try
+            {
+                platformReadDto = await _service.UpdateAsync(platform);
             }
-            var platformResponseDto = await _service.UpdateAsync(platform);
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
 
-            return CreatedAtRoute(nameof(GetPlatformById), new { platformResponseDto.Id }, platformResponseDto);
+            return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);
         }
 
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<PlatformResponseDto>> DeletePlatform(int id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PlatformReadDto>> DeletePlatform(int id)
         {
-            var platformResponseDto = await _service.GetByIdAsync(id);
+            PlatformReadDto platformReadDto;
+            try
+            {
+                platformReadDto = await _service.GetByIdAsync(id);
+            }
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    ArgumentNullException => NotFound(
+                        $"Exception type - {nameof(ArgumentNullException)} \nException message - {e.Message}"),
+                    ArgumentException => NotFound(
+                        $"Exception type - {nameof(ArgumentException)} \nException message - {e.Message}"),
+                    _ => BadRequest($"Exception type - {nameof(Exception)} \nException message - {e.Message}")
+                };
+            }
 
             await _service.DeleteAsync(id);
 
-            return CreatedAtRoute(nameof(GetPlatformById), new { Id = id }, platformResponseDto);
+            return CreatedAtRoute(nameof(GetPlatformById), new { Id = id }, platformReadDto);
         }
     }
 }

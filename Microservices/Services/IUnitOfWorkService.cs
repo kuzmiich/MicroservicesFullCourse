@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microservices.Services
+﻿namespace Microservices.Services
 {
-    public interface IUnitOfWorkService<TResponseDto, TRequestDto> : 
-        IDtoService<TResponseDto, TRequestDto>, 
-        IDtoServiceAsync<TResponseDto, TRequestDto>
-        where TResponseDto : class
-        where TRequestDto : class
+    public interface IUnitOfWorkService<TReadDto, TCreateDto> : 
+        IDtoService<TReadDto, TCreateDto>, 
+        IDtoServiceAsync<TReadDto, TCreateDto>
+        where TReadDto : class
+        where TCreateDto : class
     {
     }
 }

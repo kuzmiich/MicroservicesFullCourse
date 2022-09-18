@@ -8,10 +8,10 @@ namespace Microservices.PlatformService.Profiles
     {
         public PlatformProfiles()
         {
-            CreateMap<PlatformResponseDto, Platform>()
+            CreateMap<PlatformReadDto, Platform>()
                 .ReverseMap();
 
-            CreateMap<PlatformRequestDto, Platform>()
+            CreateMap<PlatformCreateDto, Platform>()
                 .ReverseMap();
         }
     }

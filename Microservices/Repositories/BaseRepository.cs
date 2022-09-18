@@ -31,7 +31,7 @@ namespace Microservices.Repositories
         {
             RepositoryExceptionHelper.IsIdValid(id);
 
-            var foundEntity = await Set.FindAsync(id);
+            var foundEntity = await _context.FindAsync<TEntity>(id);
 
             RepositoryExceptionHelper.IsEntityExists(foundEntity, typeof(TEntity).FullName);
 
@@ -51,8 +51,6 @@ namespace Microservices.Repositories
         {
             var deletedEntity = await GetByIdAsync(id);
 
-            RepositoryExceptionHelper.IsEntityExists(deletedEntity, typeof(TEntity).FullName);
-
             _context.Remove(deletedEntity);
         }
 
@@ -68,7 +66,7 @@ namespace Microservices.Repositories
         {
             RepositoryExceptionHelper.IsIdValid(id);
 
-            var foundEntity = Set.Find(id);
+            var foundEntity = _context.Find<TEntity>(id);
 
             RepositoryExceptionHelper.IsEntityExists(foundEntity, typeof(TEntity).FullName);
 
@@ -87,8 +85,6 @@ namespace Microservices.Repositories
         public void Delete(int id)
         {
             var deletedEntity = GetById(id);
-
-            RepositoryExceptionHelper.IsEntityExists(deletedEntity, typeof(TEntity).FullName);
 
             _context.Remove(deletedEntity);
         }

@@ -1,3 +1,5 @@
+using System;
+using System.Net;
 using AutoMapper;
 using Microservices.Repositories;
 using Microservices.Services;
@@ -7,6 +9,7 @@ using Microservices.PlatformService.Models;
 using Microservices.PlatformService.Profiles;
 using Microservices.PlatformService.Repositories;
 using Microservices.PlatformService.Services;
+using Microservices.PlatformService.SyncDataServices.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +38,8 @@ namespace Microservices.PlatformService
                 ServiceLifetime.Scoped);
 
             services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
-            services.AddScoped<IUnitOfWorkService<PlatformResponseDto, PlatformRequestDto>, PlatformBusinessService>();
+            services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+            services.AddScoped<IUnitOfWorkService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
 
             services.AddControllers();
             services.AddAutoMapper(configuration => configuration.AddProfiles(new Profile[]
@@ -47,6 +51,9 @@ namespace Microservices.PlatformService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Microservices.Platform", Version = "v1" });
             });
+            
+            // Logger
+            Console.WriteLine($"--> CommandService Endpoint {Configuration["CommandService"]}");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

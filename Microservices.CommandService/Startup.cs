@@ -1,8 +1,8 @@
-using Microservices.CommandService.SyncDataServices.Http;
 using Microservices.PlatformService.Dtos;
 using Microservices.PlatformService.Models;
 using Microservices.PlatformService.Repositories;
 using Microservices.PlatformService.Services;
+using Microservices.PlatformService.SyncDataServices.Http;
 using Microservices.Repositories;
 using Microservices.Services;
 using Microsoft.AspNetCore.Builder;
@@ -48,8 +48,6 @@ namespace Microservices.CommandService
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -8,7 +8,7 @@ namespace Microservices.Helpers
         {
             if (id <= 0)
             {
-                throw new ArgumentException(nameof(id));
+                throw new ArgumentException($"Id ({id}) - is not valid! Please enter correct id!");
             }
         }
 
@@ -16,7 +16,7 @@ namespace Microservices.Helpers
         {
             if (entity is null)
             {
-                throw new ArgumentNullException(entityName);
+                throw new ArgumentNullException(nameof(entity),$"Entity didn't exist in storage, entityName - {entityName}");
             }
         }
     }

@@ -6,7 +6,7 @@ using Microservices.PlatformService.Models;
 
 namespace Microservices.PlatformService.Services
 {
-    public class PlatformBusinessService : BaseService<PlatformResponseDto, PlatformRequestDto, Platform>
+    public class PlatformBusinessService : BaseService<PlatformReadDto, PlatformCreateDto, Platform>
     {
         public PlatformBusinessService(IUnitOfWorkRepository<Platform> repository, IMapper mapper) 
             : base(repository, mapper)

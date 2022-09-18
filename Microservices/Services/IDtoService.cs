@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Microservices.Services
 {
-    public interface IDtoService<TResponseDto, TRequestDto> : IDisposable
-        where TResponseDto : class
-        where TRequestDto : class
+    public interface IDtoService<TReadDto, in TCreateDto> : IDisposable
+        where TReadDto : class
+        where TCreateDto : class
     {
-        List<TResponseDto> GetAll();
+        List<TReadDto> GetAll();
 
-        TResponseDto GetById(int id);
+        TReadDto GetById(int id);
 
-        TResponseDto Update(TResponseDto item);
+        TReadDto Update(TReadDto item);
 
-        TResponseDto Create(TRequestDto item);
+        TReadDto Create(TCreateDto item);
 
         void Delete(int id);
     }
