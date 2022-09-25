@@ -7,7 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Microservices.CommandService/Microservices.CommandService.csproj", "Microservices.CommandService/"]
-RUN dotnet restore "Microservices.Platform/Microservices.CommandService.csproj"
+RUN dotnet restore "Microservices.CommandService/Microservices.CommandService.csproj"
 COPY . .
 WORKDIR "/src/Microservices.CommandService"
 RUN dotnet build "Microservices.CommandService.csproj" -c Release -o /app/build

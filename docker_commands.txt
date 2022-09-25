@@ -1,7 +1,7 @@
 # build image
 docker build -t opna/platformservice -f Dockerfile_PlatformService .
 
-# run
+# create container
 docker run -p 8080:80 opna/platformservice (image_id/image_name)
 
 # stop

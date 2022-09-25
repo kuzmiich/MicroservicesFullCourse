@@ -1,32 +1,34 @@
-using AutoMapper;
-using Microservices.PlatformService.Models;
-using Microservices.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microservices.CommandService.SyncDataServices.Http;
-using Microservices.PlatformService.Dtos;
+using AutoMapper;
+using Microservices.CommandService.Dtos;
+using Microservices.CommandService.Models;
+using Microservices.CommandService.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace Microservices.CommandsService.Controllers
+namespace Microservices.CommandService.Controllers
 {
     [Route("api/c/[controller]")]
     [ApiController]
     public class PlatformController : ControllerBase
     {
-        private readonly ICommandDataClient _service;
         private readonly IMapper _mapper;
+        private readonly ICommandRepository _repository;
 
-        public PlatformController(ICommandDataClient service, IMapper mapper)
+        public PlatformController(IMapper mapper, ICommandRepository repository)
         {
-            _service = service;
             _mapper = mapper;
+            _repository = repository;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> GetPlatformsFiltered()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PlatformReadDto>>> GetPlatforms()
         {
-            return null;
+            var platforms = await _repository.GetAllPlatforms().ToListAsync();
+            
+            return Ok(_mapper.Map<PlatformReadDto>(platforms));
         }
     }
 }

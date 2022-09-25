@@ -13,6 +13,9 @@ namespace Microservices.PlatformService.Profiles
 
             CreateMap<PlatformCreateDto, Platform>()
                 .ReverseMap();
+            
+            CreateMap<PlatformReadDto, PlatformPublishDto>()
+                .ReverseMap();
         }
     }
 }

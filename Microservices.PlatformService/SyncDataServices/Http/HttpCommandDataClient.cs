@@ -26,7 +26,7 @@ namespace Microservices.PlatformService.SyncDataServices.Http
                 Encoding.UTF8,
                 "application/json");
 
-            var response = await _httpClient.PostAsync($"{_configuration["CommandService"]}", httpContent);
+            var response = await _httpClient.PostAsync(_configuration["CommandServiceURL"], httpContent);
 
             Console.WriteLine(response.IsSuccessStatusCode
                 ? "--> Sync POST to CommandService was OK!"

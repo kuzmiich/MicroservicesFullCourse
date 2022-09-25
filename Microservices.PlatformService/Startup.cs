@@ -1,5 +1,5 @@
 using System;
-using System.Net;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microservices.Repositories;
 using Microservices.Services;
@@ -22,21 +22,18 @@ namespace Microservices.PlatformService
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+        private readonly IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            _configuration = configuration;
+            _env = env;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<PlatformContext>(options =>
-                //options.UseSqlServer(Configuration.GetConnectionString("MSSqlDatabase")),
-                options.UseInMemoryDatabase("InMemory"),
-                ServiceLifetime.Scoped);
-
+            AddDbContext(services);
             services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddScoped<IUnitOfWorkService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
@@ -53,10 +50,9 @@ namespace Microservices.PlatformService
             });
             
             // Logger
-            Console.WriteLine($"--> CommandService Endpoint {Configuration["CommandService"]}");
+            Console.WriteLine($"--> CommandService Endpoint {_configuration["CommandServiceURL"]}");
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -66,7 +62,7 @@ namespace Microservices.PlatformService
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Microservices.Platform v1"));
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -74,6 +70,20 @@ namespace Microservices.PlatformService
             {
                 endpoints.MapControllers();
             });
+        }
+        
+        private void AddDbContext(IServiceCollection services)
+        {
+            if (_env.IsProduction())
+            {
+                services.AddDbContext<PlatformContext>(options =>
+                    options.UseSqlServer(_configuration.GetConnectionString("MSSqlDatabaseProduction")));
+            }
+            else if (_env.IsDevelopment())
+            {
+                services.AddDbContext<PlatformContext>(options =>
+                    options.UseSqlServer(_configuration.GetConnectionString("MSSqlDatabaseLocal")));
+            }
         }
     }
 }

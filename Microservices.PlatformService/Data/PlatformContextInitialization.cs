@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microservices.PlatformService.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace Microservices.PlatformService.Data
 {
@@ -12,27 +14,42 @@ namespace Microservices.PlatformService.Data
         public static async Task InitContextAsync(this IHost app)
         {
             await using var serviceScope = app.Services.CreateAsyncScope();
-
+            var environment = serviceScope.ServiceProvider.GetService<IWebHostEnvironment>();
             var context = serviceScope.ServiceProvider.GetService<PlatformContext>();
-            await SeedPlatformAsync(context);
-            await context.SaveChangesAsync();
+            
+            await SeedPlatformAsync(context, environment.IsProduction());
         }
 
-        private static Task SeedPlatformAsync(PlatformContext context)
+        private static async Task SeedPlatformAsync(PlatformContext context, bool isProd)
         {
+            if (isProd)
+            {
+                try
+                {
+                    await context.Database.MigrateAsync();
+                    Console.WriteLine("Data was successfully migrated.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Could not run migrations: {ex.Message}");
+                }
+            }
+            
             if(!context.Platforms.Any())
             {
                 Console.WriteLine("--> Seeding data...");
 
-                return context.Platforms.AddRangeAsync(
+                await context.Platforms.AddRangeAsync(
                     new Platform() { Name = ".Net", Publisher="Microsoft", Cost = "Free"},
                     new Platform() { Name = "Sql Server Express", Publisher="Microsoft", Cost = "Free"},
                     new Platform() { Name = "Kubernetes", Publisher="Cloud Native Computing Foundation", Cost = "Free"}
                 );
+                await context.SaveChangesAsync();
             }
-
-            Console.WriteLine("--> We already have data");
-            return Task.FromResult(false);
+            else
+            {
+                Console.WriteLine("--> We already have data");
+            }
         }
     }
 }
