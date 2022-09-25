@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microservices.PlatformService.AsyncDataService;
 using Microservices.PlatformService.Dtos;
 using Microservices.PlatformService.SyncDataServices.Http;
 
@@ -16,12 +17,16 @@ namespace Microservices.PlatformService.Controllers
     {
         private readonly ICommandDataClient _commandDataClient;
         private readonly IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> _service;
+        private readonly IMessageBusClient _messageBusClient;
+        private readonly IMapper _mapper;
 
         public PlatformController(IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> service,
-            ICommandDataClient commandDataClient)
+            ICommandDataClient commandDataClient, IMessageBusClient messageBusClient, IMapper mapper)
         {
             _service = service;
             _commandDataClient = commandDataClient;
+            _messageBusClient = messageBusClient;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -67,14 +72,25 @@ namespace Microservices.PlatformService.Controllers
             }
             var platformReadDto = await _service.CreateAsync(platform);
             
-            // Send Sync Message
+            // Send Async Message
             try
             {
                 await _commandDataClient.SendPlatformToCommand(platformReadDto);
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"--> Could not send synchronously: {ex.Message}");
+                Console.WriteLine($"--> Could not send by HttpClient: {ex.Message}");
+            }
+            // Send sync message to Message Bus
+            try
+            {
+                var platformPublishDto = _mapper.Map<PlatformPublishDto>(platformReadDto);
+                platformPublishDto.Event = "Platform_Published";
+                _messageBusClient.PublishNewPlatform(platformPublishDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"--> Could not send synchronously: {e.Message}");
             }
             
             return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);

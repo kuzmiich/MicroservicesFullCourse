@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microservices.PlatformService.AsyncDataService;
 using Microservices.Repositories;
 using Microservices.Services;
 using Microservices.PlatformService.Data;
@@ -35,8 +36,9 @@ namespace Microservices.PlatformService
         {
             AddDbContext(services);
             services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
-            services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddScoped<IUnitOfWorkService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
+            services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
+            services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
             services.AddControllers();
             services.AddAutoMapper(configuration => configuration.AddProfiles(new Profile[]
