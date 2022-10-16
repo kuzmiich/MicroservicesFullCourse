@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microservices.CommandService.Dtos;
-using Microservices.CommandService.Models;
-using Microservices.CommandService.Repositories;
+using Microservices.CommandService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace Microservices.CommandService.Controllers
@@ -30,7 +27,7 @@ namespace Microservices.CommandService.Controllers
             if (!_repository.PlatformExist(platformId))
                 return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database.");
 
-            var commands = await _repository.GetCommandsForPlatform(platformId).ToListAsync();
+            var commands = await _repository.GetCommandsForPlatform(platformId);
             return Ok(_mapper.Map<List<CommandReadDto>>(commands));
         }
 
@@ -42,7 +39,7 @@ namespace Microservices.CommandService.Controllers
 
             var command = await _repository.GetCommand(platformId, commandId);
 
-            if (command == null)
+            if (command is null)
                 return NotFound($"Commands with this id:'{commandId}', doesn't exist in the Database.");
 
             return Ok(_mapper.Map<CommandReadDto>(command));
@@ -54,19 +51,18 @@ namespace Microservices.CommandService.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Select(x => x.Value.Errors)
-                    .Where(y=>y.Count>0)
+                    .Where(y => y.Count > 0)
                     .ToList());
 
             if (!_repository.PlatformExist(platformId))
                 return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database");
 
-            var command = _mapper.Map<Command>(commandCreateDto);
-            await _repository.CreateCommand(platformId, command);
+            var commandReadDto = await _repository.CreateCommand(platformId, commandCreateDto);
             await _repository.SaveChanges();
 
             return CreatedAtRoute(nameof(GetCommandForPlatform),
-                new { platformId, commandId = command.Id },
-                _mapper.Map<CommandReadDto>(command));
+                new { platformId, commandId = commandReadDto.Id },
+                commandReadDto);
         }
     }
 }

@@ -1,9 +1,9 @@
-using Microservices.CommandService.AsyncDataServices;
 using System;
 using Microservices.CommandService.Data;
-using Microservices.CommandService.EventProcessing;
-using Microservices.CommandService.Repositories;
+using Microservices.CommandService.Services;
 using Microservices.CommandService.SyncDataServices.Grpc;
+using Microservices.CommandService.SyncDataServices.RabbitMQ;
+using Microservices.CommandService.SyncDataServices.RabbitMQ.EventProcessing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

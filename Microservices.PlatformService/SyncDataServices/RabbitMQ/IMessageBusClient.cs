@@ -1,6 +1,6 @@
 using Microservices.PlatformService.Dtos;
 
-namespace Microservices.PlatformService.AsyncDataService.RabbitMQ
+namespace Microservices.PlatformService.SyncDataServices.RabbitMQ
 {
     public interface IMessageBusClient
     {

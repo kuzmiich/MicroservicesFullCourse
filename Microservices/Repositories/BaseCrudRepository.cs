@@ -22,10 +22,7 @@ namespace Microservices.Repositories
             Set = _context.Set<TEntity>();
         }
 
-        public virtual IQueryable<TEntity> GetAll()
-        {
-            return Set.AsNoTracking();
-        }
+        public virtual IQueryable<TEntity> GetAll() => Set.AsNoTracking().DefaultIfEmpty();
 
         public virtual async Task<TEntity> GetByIdAsync(int id)
         {

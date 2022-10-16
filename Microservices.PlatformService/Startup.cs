@@ -1,8 +1,5 @@
 using System;
-using System.Threading.Tasks;
 using AutoMapper;
-using Microservices.PlatformService.AsyncDataService;
-using Microservices.PlatformService.AsyncDataService.RabbitMQ;
 using Microservices.Repositories;
 using Microservices.Services;
 using Microservices.PlatformService.Data;
@@ -13,6 +10,7 @@ using Microservices.PlatformService.Repositories;
 using Microservices.PlatformService.Services;
 using Microservices.PlatformService.SyncDataServices.Grpc;
 using Microservices.PlatformService.SyncDataServices.Http;
+using Microservices.PlatformService.SyncDataServices.RabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +37,7 @@ namespace Microservices.PlatformService
         public void ConfigureServices(IServiceCollection services)
         {
             AddDbContext(services);
-            services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformCrudRepository>();
+            services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
             services.AddScoped<IUnitOfWorkService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddSingleton<IMessageBusClient, MessageBusClient>();

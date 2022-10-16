@@ -11,17 +11,16 @@ namespace Microservices.CommandService.Profiles
         {
             CreateMap<CommandReadDto, Command>()
                 .ReverseMap();
-            
-            CreateMap<CommandCreateDto, Command>()
-                .ReverseMap();
+            CreateMap<CommandCreateDto, Command>();
             
             CreateMap<PlatformReadDto, Platform>()
                 .ReverseMap();
-
             CreateMap<PlatformPublishDto, Platform>()
                 .ForMember(dest => dest.ExternalPlatformId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
-
+            CreateMap<PlatformPublishDto, PlatformCreateDto>();
+            CreateMap<PlatformCreateDto, Platform>();
+            
             CreateMap<GrpcPlatformModel, Platform>()
                 .ForMember(dest => dest.ExternalPlatformId, opt => opt.MapFrom(src => src.PlatformId))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))

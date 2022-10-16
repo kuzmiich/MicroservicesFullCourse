@@ -16,7 +16,7 @@ docker push opna/platformservice (image_id/image_name)
 --- Clearing 
 
 # remove image
-docker rmi
+docker rmi (image_id/image_name)
 
 # remove container 
-docker rm
+docker rm (image_id/image_name)

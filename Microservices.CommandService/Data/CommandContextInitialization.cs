@@ -1,5 +1,6 @@
+using Microservices.CommandService.Dtos;
 using Microservices.CommandService.Models;
-using Microservices.CommandService.Repositories;
+using Microservices.CommandService.Services;
 using Microservices.CommandService.SyncDataServices.Grpc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -83,7 +84,12 @@ namespace Microservices.CommandService.Data
             {
                 if(!repository.ExternalPlatformExist(platform.ExternalPlatformId))
                 {
-                    await repository.CreatePlatform(platform);
+                    var platformCreateDto = new PlatformCreateDto()
+                    {
+                        ExternalPlatformId = platform.ExternalPlatformId,
+                        Name = platform.Name
+                    };
+                    await repository.CreatePlatform(platformCreateDto);
                 }
                 await repository.SaveChanges();
             }

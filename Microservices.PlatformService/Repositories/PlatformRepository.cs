@@ -4,9 +4,9 @@ using Microservices.PlatformService.Models;
 
 namespace Microservices.PlatformService.Repositories
 {
-    public class PlatformCrudRepository : BaseCrudRepository<PlatformsContext, Platform>
+    public class PlatformRepository : BaseCrudRepository<PlatformsContext, Platform>
     {
-        public PlatformCrudRepository(PlatformsContext context) : base(context)
+        public PlatformRepository(PlatformsContext context) : base(context)
         {
         }
     }

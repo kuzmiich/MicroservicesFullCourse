@@ -14,8 +14,7 @@ namespace Microservices.PlatformService.Profiles
             CreateMap<PlatformCreateDto, Platform>()
                 .ReverseMap();
 
-            CreateMap<PlatformReadDto, PlatformPublishDto>()
-                .ReverseMap();
+            CreateMap<PlatformReadDto, PlatformPublishDto>();
 
             CreateMap<Platform, GrpcPlatformModel>()
                 .ForMember(dest => dest.PlatformId, opt => opt.MapFrom(src => src.Id))

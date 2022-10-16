@@ -5,7 +5,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 
-namespace Microservices.PlatformService.AsyncDataService.RabbitMQ
+namespace Microservices.PlatformService.SyncDataServices.RabbitMQ
 {
     public class MessageBusClient : IMessageBusClient
     {

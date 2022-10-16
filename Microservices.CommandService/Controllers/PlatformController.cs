@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microservices.CommandService.Dtos;
-using Microservices.CommandService.Models;
-using Microservices.CommandService.Repositories;
+using Microservices.CommandService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Microservices.CommandService.Controllers
 {
@@ -26,7 +23,7 @@ namespace Microservices.CommandService.Controllers
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<PlatformReadDto>>> GetPlatforms()
         {
-            var platforms = await _repository.GetAllPlatforms().ToListAsync();
+            var platforms = await _repository.GetAllPlatforms();
             
             return Ok(_mapper.Map<List<PlatformReadDto>>(platforms));
         }

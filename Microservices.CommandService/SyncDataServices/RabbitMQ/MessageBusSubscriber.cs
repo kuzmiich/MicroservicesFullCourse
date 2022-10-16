@@ -1,4 +1,4 @@
-using Microservices.CommandService.EventProcessing;
+using Microservices.CommandService.SyncDataServices.RabbitMQ.EventProcessing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microservices.CommandService.AsyncDataServices
+namespace Microservices.CommandService.SyncDataServices.RabbitMQ
 {
     public class MessageBusSubscriber : BackgroundService
     {
@@ -32,7 +32,15 @@ namespace Microservices.CommandService.AsyncDataServices
                 HostName = _configuration["RabbitMQHost"],
                 Port = int.Parse(_configuration["RabbitMQPort"])
             };
-            _connection = factory.CreateConnection();
+            try
+            {
+                _connection = factory.CreateConnection();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Can not create connection in RabbitMQ server Error - {e.Message}");
+                return;
+            }
             _channel = _connection.CreateModel();
             _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
             _queueName = _channel.QueueDeclare().QueueName;
@@ -43,8 +51,11 @@ namespace Microservices.CommandService.AsyncDataServices
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (_channel is null)
+                return Task.CompletedTask;
+            
             stoppingToken.ThrowIfCancellationRequested();
-
+            
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (moduleHandle, ea) =>
             {
@@ -69,7 +80,7 @@ namespace Microservices.CommandService.AsyncDataServices
         public override void Dispose()
         {
             Console.WriteLine("--> MessageBus Disposed");
-            if (_channel.IsOpen)
+            if (_channel is { IsOpen: true })
             {
                 _channel.Close();
                 _connection.Close();

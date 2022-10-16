@@ -11,9 +11,7 @@ namespace Microservices.CommandService
         {
             var host = CreateHostBuilder(args).Build();
 
-            await host.InitContextAsync();
-
-            await host.RunAsync();
+            await Task.WhenAll(host.InitContextAsync(), host.RunAsync());
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

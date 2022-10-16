@@ -1,13 +1,12 @@
 using AutoMapper;
 using Microservices.CommandService.Dtos;
-using Microservices.CommandService.Models;
-using Microservices.CommandService.Repositories;
+using Microservices.CommandService.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Microservices.CommandService.EventProcessing
+namespace Microservices.CommandService.SyncDataServices.RabbitMQ.EventProcessing
 {
     public class EventProcessor : IEventProcessor
     {
@@ -20,19 +19,19 @@ namespace Microservices.CommandService.EventProcessing
             _mapper = mapper;
         }
 
-        public async void ProcessEvent(string message)
+        public async Task ProcessEvent(string message)
         {
-            switch(DetermineEvent(message)) 
+            switch (DetermineEvent(message))
             {
                 case EventType.PlatformPublished:
                     await AddPlatform(message);
                     break;
                 case EventType.Undetermined:
                 default:
-                    throw new NotSupportedException("This type of event is didn't allowed");
+                    throw new NotSupportedException("This type of event is didn't supported.");
             }
         }
-            
+
 
         private EventType DetermineEvent(string notificationMessage) =>
             JsonSerializer.Deserialize<GenericEventDto>(notificationMessage)?.Event switch
@@ -47,19 +46,18 @@ namespace Microservices.CommandService.EventProcessing
             var repository = scope.ServiceProvider.GetRequiredService<ICommandRepository>();
             var platformPublishedDto = JsonSerializer.Deserialize<PlatformPublishDto>(platformPublishedMessage);
 
-            var platform = _mapper.Map<Platform>(platformPublishedDto);
-            platform.Id = default;
-            if (!repository.ExternalPlatformExist(platform.ExternalPlatformId))
+            var platformCreateDto = _mapper.Map<PlatformCreateDto>(platformPublishedDto);
+            if (!repository.ExternalPlatformExist(platformCreateDto.ExternalPlatformId))
             {
-                await repository.CreatePlatform(platform);
+                await repository.CreatePlatform(platformCreateDto);
                 await repository.SaveChanges();
             }
         }
-        
+
         private enum EventType
         {
-             PlatformPublished,
-             Undetermined
+            PlatformPublished,
+            Undetermined
         }
     }
 }

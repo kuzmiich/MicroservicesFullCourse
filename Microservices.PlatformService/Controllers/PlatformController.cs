@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microservices.PlatformService.AsyncDataService.RabbitMQ;
 using Microservices.PlatformService.Dtos;
 using Microservices.PlatformService.SyncDataServices.Http;
+using Microservices.PlatformService.SyncDataServices.RabbitMQ;
 
 namespace Microservices.PlatformService.Controllers
 {
@@ -36,7 +36,7 @@ namespace Microservices.PlatformService.Controllers
 
             return Ok(platforms);
         }
-        
+
         [HttpGet("{id:int}", Name = "GetPlatformById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -55,9 +55,11 @@ namespace Microservices.PlatformService.Controllers
                         $"Exception type - {nameof(ArgumentNullException)} \nException message - {e.Message}"),
                     ArgumentException => NotFound(
                         $"Exception type - {nameof(ArgumentException)} \nException message - {e.Message}"),
-                    _ => BadRequest($"Exception type - {nameof(Exception)} \nException message - {e.Message}")
+                    _ => BadRequest(
+                        $"Exception type - {nameof(BadHttpRequestException)} \nException message - {e.Message}")
                 };
             }
+
             return Ok(platform);
         }
 
@@ -67,20 +69,20 @@ namespace Microservices.PlatformService.Controllers
         public async Task<ActionResult<PlatformReadDto>> CreatePlatform(PlatformCreateDto platform)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             var platformReadDto = await _service.CreateAsync(platform);
-            
+
             // Send Sync Message
             try
             {
                 await _commandDataClient.SendPlatformToCommand(platformReadDto);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"--> Could not send by HttpClient: {ex.Message}");
             }
+
             // Send async message to Message Bus
             try
             {
@@ -92,7 +94,7 @@ namespace Microservices.PlatformService.Controllers
             {
                 Console.WriteLine($"--> Could not send by RabbitMq: {e.Message}");
             }
-            
+
             return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);
         }
 
@@ -104,7 +106,7 @@ namespace Microservices.PlatformService.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             PlatformReadDto platformReadDto;
             try
             {
