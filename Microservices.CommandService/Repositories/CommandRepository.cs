@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microservices.CommandService.Data;
-using Microservices.CommandService.Dtos;
 using Microservices.CommandService.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,16 +27,16 @@ namespace Microservices.CommandService.Repositories
 
         public Task CreatePlatform(Platform plat)
         {
-            if(plat == null) 
+            if (plat == null)
                 throw new ArgumentNullException(nameof(plat));
-            
+
             return _context.Platforms.AddAsync(plat).AsTask();
         }
 
-        public bool ExternalPlatformExist(int externalPlatformId) => 
+        public bool ExternalPlatformExist(int externalPlatformId) =>
             _context.Platforms.Any(p => p.ExternalPlatformId == externalPlatformId);
 
-        public IQueryable<Platform> GetAllPlatforms() => _context.Platforms.AsQueryable();
+        public IQueryable<Platform> GetAllPlatforms() => _context.Platforms.AsNoTracking();
 
         public Task<Command> GetCommand(int platformId, int commandId)
         {
@@ -48,8 +46,8 @@ namespace Microservices.CommandService.Repositories
 
         public IOrderedQueryable<Command> GetCommandsForPlatform(int platformId) =>
             _context.Commands
-                .Where(c => c.PlatformId == platformId)
                 .AsQueryable()
+                .Where(c => c.PlatformId == platformId)
                 .OrderBy(c => c.Platform.Name);
 
         public bool PlatformExist(int platformId) => _context.Platforms.Any(p => p.Id == platformId);

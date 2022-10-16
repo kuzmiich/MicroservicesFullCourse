@@ -7,10 +7,11 @@ using Microservices.CommandService.Models;
 using Microservices.CommandService.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Microservices.CommandService.Controllers
 {
-    [Route("api/c/platform/{platformId}/[controller]")]
+    [Route("api/c/platform/{platformId:int}/[controller]")]
     [ApiController]
     public class CommandController : ControllerBase
     {
@@ -23,50 +24,47 @@ namespace Microservices.CommandService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CommandReadDto>>> GetCommandsForPlatform(int platformId)
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<List<CommandReadDto>>> GetCommandsForPlatform(int platformId)
         {
-            Console.WriteLine($"--> Hit GetCommandsForPlatform: {platformId}");
-
             if (!_repository.PlatformExist(platformId))
-                return NotFound();
+                return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database.");
 
-            var platform = await _repository.GetCommandsForPlatform(platformId).ToListAsync();
-            return Ok(_mapper.Map<List<CommandReadDto>>(platform));
+            var commands = await _repository.GetCommandsForPlatform(platformId).ToListAsync();
+            return Ok(_mapper.Map<List<CommandReadDto>>(commands));
         }
 
         [HttpGet("{commandId:int}", Name = "GetCommandForPlatform")]
         public async Task<ActionResult<CommandReadDto>> GetCommandForPlatform(int platformId, int commandId)
         {
-            Console.WriteLine($"--> Hit GetCommandForPlatform: {platformId} / {commandId}");
-
             if (!_repository.PlatformExist(platformId))
-                return NotFound();
+                return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database.");
 
             var command = await _repository.GetCommand(platformId, commandId);
 
             if (command == null)
-                return NotFound();
+                return NotFound($"Commands with this id:'{commandId}', doesn't exist in the Database.");
 
             return Ok(_mapper.Map<CommandReadDto>(command));
         }
 
         [HttpPost]
-        public async Task<ActionResult<CommandReadDto>> CreateCommandForPlatform(int platformId, CommandCreateDto commandCreateDto)
+        public async Task<ActionResult<CommandReadDto>> CreateCommandForPlatform(int platformId,
+            CommandCreateDto commandCreateDto)
         {
-            Console.WriteLine($"--> Hit CreateCommandForPlatform: {platformId}");
-            
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-                
+                return BadRequest(ModelState.Select(x => x.Value.Errors)
+                    .Where(y=>y.Count>0)
+                    .ToList());
+
             if (!_repository.PlatformExist(platformId))
-                return NotFound();
+                return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database");
 
             var command = _mapper.Map<Command>(commandCreateDto);
             await _repository.CreateCommand(platformId, command);
             await _repository.SaveChanges();
 
-            return CreatedAtRoute(nameof(GetCommandForPlatform), 
+            return CreatedAtRoute(nameof(GetCommandForPlatform),
                 new { platformId, commandId = command.Id },
                 _mapper.Map<CommandReadDto>(command));
         }

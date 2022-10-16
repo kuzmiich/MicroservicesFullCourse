@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Microservices.PlatformService.Migrations
 {
-    [DbContext(typeof(PlatformContext))]
+    [DbContext(typeof(PlatformsContext))]
     partial class PlatformContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

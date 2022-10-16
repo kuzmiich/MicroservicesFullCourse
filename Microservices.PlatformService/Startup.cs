@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microservices.PlatformService.AsyncDataService;
+using Microservices.PlatformService.AsyncDataService.RabbitMQ;
 using Microservices.Repositories;
 using Microservices.Services;
 using Microservices.PlatformService.Data;
@@ -10,14 +11,17 @@ using Microservices.PlatformService.Models;
 using Microservices.PlatformService.Profiles;
 using Microservices.PlatformService.Repositories;
 using Microservices.PlatformService.Services;
+using Microservices.PlatformService.SyncDataServices.Grpc;
 using Microservices.PlatformService.SyncDataServices.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.IO;
 
 namespace Microservices.PlatformService
 {
@@ -35,11 +39,12 @@ namespace Microservices.PlatformService
         public void ConfigureServices(IServiceCollection services)
         {
             AddDbContext(services);
-            services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
+            services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformCrudRepository>();
             services.AddScoped<IUnitOfWorkService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
+            services.AddGrpc();
             services.AddControllers();
             services.AddAutoMapper(configuration => configuration.AddProfiles(new Profile[]
             {
@@ -71,6 +76,10 @@ namespace Microservices.PlatformService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<GrpcPlatformService>();
+
+                endpoints.MapGet("/protos/platforms.proto", async context =>
+                    await context.Response.WriteAsync(File.ReadAllText("Protos/platforms.proto")));
             });
         }
         
@@ -78,12 +87,12 @@ namespace Microservices.PlatformService
         {
             if (_env.IsProduction())
             {
-                services.AddDbContext<PlatformContext>(options =>
+                services.AddDbContext<PlatformsContext>(options =>
                     options.UseSqlServer(_configuration.GetConnectionString("MSSqlDatabaseProduction")));
             }
             else if (_env.IsDevelopment())
             {
-                services.AddDbContext<PlatformContext>(options =>
+                services.AddDbContext<PlatformsContext>(options =>
                     options.UseSqlServer(_configuration.GetConnectionString("MSSqlDatabaseLocal")));
             }
         }

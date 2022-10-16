@@ -1,0 +1,43 @@
+# To learn more about .editorconfig see https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference
+
+root = true  #Remove the line if you want to inherit .editorconfig settings from higher directories
+
+# All files
+[*]
+#### Core EditorConfig Options ####
+# Indentation and spacing
+indent_size = 4  #Recommended by default, but it can be overwritten by rules below (depending on file extension).
+indent_style = space  #Spaces instead of tabs, as different code readers (e.g., online git code comparers) interprent tabs with different indent.
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = true:error  #Git doesn't like, when file is not ended with space.
+trim_trailing_whitespace = true:error  #Trailing whitespaces complicate work with code in text editor and git.
+
+# Xml files
+[*.{xml,xaml,config,aspx}]
+indent_size = 2  #Recommended as industry standard. Xml files have deep nesting, so small indent is important.
+
+# C# files
+[*.{cs, cshtml,html}]
+indent_size = 4  #Recommended as industry standard. Allowed to be replaced to 2. Not so important, as modern C# code-style recommends to break long lines.
+
+#### .NET Coding Conventions ####
+
+# Organize usings
+dotnet_separate_import_directive_groups = false #Reasons to separate the directives not found. If someone finds it useful, then the arguments are welcome.
+dotnet_sort_system_directives_first = false     #It's easier for human brain to search in list sorted from A to Z instead of searching in two lists.
+file_header_template = unset                    #Blank.
+
+# this. and Me. preferences
+dotnet_style_qualification_for_event = false:error
+dotnet_style_qualification_for_field = false:error
+dotnet_style_qualification_for_method = false:silent  #Sometimes, it's more readable when methods are called through this (e.g., this.GetType()).
+dotnet_style_qualification_for_property = false:error
+
+# Language keywords vs BCL types preferences
+dotnet_style_predefined_type_for_locals_parameters_members = true:error  #Prefer int local; It's more readable, though can add some inconvinience over refactoring.
+dotnet_style_predefined_type_for_member_access = true:error             #Prefer String.IsNullOrEmpty("s"); MSDN style. It displays that we work with class rather than primitive type.
+
+# Expression-level preferences
+dotnet_style_namespace_match_folder = true:error  #Industry standard.

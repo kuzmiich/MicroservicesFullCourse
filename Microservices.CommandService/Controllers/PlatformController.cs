@@ -23,12 +23,12 @@ namespace Microservices.CommandService.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlatformReadDto>>> GetPlatforms()
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<List<PlatformReadDto>>> GetPlatforms()
         {
             var platforms = await _repository.GetAllPlatforms().ToListAsync();
             
-            return Ok(_mapper.Map<PlatformReadDto>(platforms));
+            return Ok(_mapper.Map<List<PlatformReadDto>>(platforms));
         }
     }
 }

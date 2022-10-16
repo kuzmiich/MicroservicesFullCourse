@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Microservices.PlatformService.Data
 {
-    public static class PlatformContextInitialization
+    public static class PlatformsContextInitialization
     {
         public static async Task InitContextAsync(this IHost app)
         {
             await using var serviceScope = app.Services.CreateAsyncScope();
             var environment = serviceScope.ServiceProvider.GetService<IWebHostEnvironment>();
-            var context = serviceScope.ServiceProvider.GetService<PlatformContext>();
+            var context = serviceScope.ServiceProvider.GetService<PlatformsContext>();
             
             await SeedPlatformAsync(context, environment.IsProduction());
         }
 
-        private static async Task SeedPlatformAsync(PlatformContext context, bool isProd)
+        private static async Task SeedPlatformAsync(PlatformsContext context, bool isProd)
         {
             if (isProd)
             {

@@ -1,16 +1,16 @@
-using System;
-using System.Text;
-using System.Text.Json;
 using Microservices.PlatformService.Dtos;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
+using System;
+using System.Text;
+using System.Text.Json;
 
-namespace Microservices.PlatformService.AsyncDataService
+namespace Microservices.PlatformService.AsyncDataService.RabbitMQ
 {
     public class MessageBusClient : IMessageBusClient
     {
-        private readonly IConnection _connection;
-        private readonly IModel _channel;
+        private IConnection _connection;
+        private IModel _channel;
 
         public MessageBusClient(IConfiguration configuration)
         {
@@ -19,21 +19,13 @@ namespace Microservices.PlatformService.AsyncDataService
                 HostName = configuration["RabbitMQHost"],
                 Port = int.Parse(configuration["RabbitMQPort"])
             };
-            try
-            {
-                _connection = factory.CreateConnection();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"--> Could not connect to the Message Bus: {ex.Message}");
-            }
-            Console.WriteLine("--> Connected to MessageBus");
-            _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+            
+            SetUpConnection(factory);
+            SetUpChannel();
             _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
         }
 
-        public void PublishNewPlatform(PlatformPublishDto platformPublishedDto)
+        public void PublishPlatform(PlatformPublishDto platformPublishedDto)
         {
             var message  = JsonSerializer.Serialize(platformPublishedDto);
 
@@ -67,9 +59,28 @@ namespace Microservices.PlatformService.AsyncDataService
             }
         }
 
-        private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
+        private static void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
         {
             Console.WriteLine("--> RabbitMQ Connection Shutdown");
+        }
+        
+        private void SetUpChannel()
+        {
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+        }
+
+        private void SetUpConnection(IConnectionFactory factory)
+        {
+            try
+            {
+                _connection = factory.CreateConnection();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"--> Could not connect to the Message Bus: {ex.Message}");
+            }
+            Console.WriteLine("--> Connected to MessageBus");
         }
     }
 }

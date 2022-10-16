@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Microservices.PlatformService.Migrations
 {
-    [DbContext(typeof(PlatformContext))]
+    [DbContext(typeof(PlatformsContext))]
     [Migration("20220917145918_Initial")]
     partial class Initial
     {

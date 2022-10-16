@@ -1,6 +1,9 @@
+using Microservices.CommandService.AsyncDataServices;
 using System;
 using Microservices.CommandService.Data;
+using Microservices.CommandService.EventProcessing;
 using Microservices.CommandService.Repositories;
+using Microservices.CommandService.SyncDataServices.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +29,14 @@ namespace Microservices.CommandService
         public void ConfigureServices(IServiceCollection services)
         {
             AddDbContext(services);
+            
             services.AddScoped<ICommandRepository, CommandRepository>();
+            services.AddSingleton<IEventProcessor, EventProcessor>();
+            services.AddScoped<IPlatformDataClient, PlatformDataClient>();
             
             services.AddControllers();
+            services.AddHostedService<MessageBusSubscriber>();
+            
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen(c =>
             {
@@ -67,8 +75,7 @@ namespace Microservices.CommandService
             else if (_env.IsDevelopment())
             {
                 services.AddDbContext<CommandContext>(options =>
-                    options.UseInMemoryDatabase("InMemory"));
-                //options.UseSqlServer(_configuration.GetConnectionString("MSSqlDatabaseLocal")));
+                    options.UseSqlServer(_configuration.GetConnectionString("MSSqlDatabaseLocal")));
             }
         }
     }

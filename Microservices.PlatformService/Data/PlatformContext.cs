@@ -7,9 +7,9 @@ using Microservices.PlatformService.Models;
 
 namespace Microservices.PlatformService.Data
 {
-    public class PlatformContext : DbContext
+    public class PlatformsContext : DbContext
     {
-        public PlatformContext(DbContextOptions<PlatformContext> options) : base(options)
+        public PlatformsContext(DbContextOptions<PlatformsContext> options) : base(options)
         {
         }
 

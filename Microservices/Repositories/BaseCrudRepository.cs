@@ -6,7 +6,7 @@ using Microservices.Helpers;
 
 namespace Microservices.Repositories
 {
-    public abstract class BaseRepository<TContext, TEntity> : IUnitOfWorkRepository<TEntity>
+    public abstract class BaseCrudRepository<TContext, TEntity> : IUnitOfWorkRepository<TEntity>
         where TContext : DbContext
         where TEntity : class
     {
@@ -16,7 +16,7 @@ namespace Microservices.Repositories
         private bool _disposed;
         private readonly object _locker = new ();
 
-        public BaseRepository(TContext context)
+        public BaseCrudRepository(TContext context)
         {
             _context = context;
             Set = _context.Set<TEntity>();

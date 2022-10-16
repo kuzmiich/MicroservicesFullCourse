@@ -6,7 +6,7 @@ using Microservices.Repositories;
 
 namespace Microservices.Services
 {
-    public abstract class BaseService<TReadDto, TCreateDto, TEntity> :
+    public abstract class BaseCrudService<TReadDto, TCreateDto, TEntity> :
         IUnitOfWorkService<TReadDto, TCreateDto>
         where TReadDto : class
         where TCreateDto : class
@@ -15,7 +15,7 @@ namespace Microservices.Services
         protected readonly IUnitOfWorkRepository<TEntity> Repository;
         protected readonly IMapper Mapper;
 
-        public BaseService(IUnitOfWorkRepository<TEntity> repository, IMapper mapper)
+        public BaseCrudService(IUnitOfWorkRepository<TEntity> repository, IMapper mapper)
         {
             Repository = repository;
             Mapper = mapper;

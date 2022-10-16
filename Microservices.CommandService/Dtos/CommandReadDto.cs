@@ -4,7 +4,9 @@ namespace Microservices.CommandService.Dtos
 {
     public class CommandReadDto
     {
+        [Required]
         public int Id { get; set; }
+        
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Incorrect 'PlatformId', length should be between 1 and int.MaxValue")]
         public int PlatformId { get; set; }
@@ -14,7 +16,7 @@ namespace Microservices.CommandService.Dtos
         public string HowToDoActivity { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 4, ErrorMessage = "Incorrect 'CommandLine', length should be between 4 and 50")]
+        [StringLength(1000, MinimumLength = 4, ErrorMessage = "Incorrect 'CommandLine', length should be between 4 and 1000")]
         public string CommandLine { get; set; }
     }
 }

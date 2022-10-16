@@ -4,6 +4,7 @@ namespace Microservices.CommandService.Dtos
 {
     public class PlatformReadDto
     {
+        [Required]
         public int Id { get; set; }
 
         [Required]

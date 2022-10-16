@@ -1,11 +1,13 @@
 # create deployment 
 kubectl apply -f platforms-deployment.yaml
+kubectl apply -f commands-deployment.yaml
 
 # delete deployment
 kubectl delete deployment platforms-deployment
 
 # refresh deployment
 kubectl rollout restart deployment platforms-deployment
+kubectl rollout restart deployment commands-deployment
 
 # ingress-nginx installation
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.1/deploy/static/provider/cloud/deploy.yaml
@@ -13,5 +15,5 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 # nginx namespace
 --namespace=ingress-nginx
 
-
+# create mssql sql secret password
 kubectl create secret generic mssql --from-literal=SA_PASSWORD="pass55word!"

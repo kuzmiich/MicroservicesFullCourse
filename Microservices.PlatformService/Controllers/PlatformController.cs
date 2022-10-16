@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microservices.PlatformService.AsyncDataService;
+using Microservices.PlatformService.AsyncDataService.RabbitMQ;
 using Microservices.PlatformService.Dtos;
 using Microservices.PlatformService.SyncDataServices.Http;
 
@@ -16,8 +16,8 @@ namespace Microservices.PlatformService.Controllers
     public class PlatformController : ControllerBase
     {
         private readonly ICommandDataClient _commandDataClient;
-        private readonly IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> _service;
         private readonly IMessageBusClient _messageBusClient;
+        private readonly IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> _service;
         private readonly IMapper _mapper;
 
         public PlatformController(IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> service,
@@ -29,7 +29,7 @@ namespace Microservices.PlatformService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<PlatformReadDto>>> GetPlatforms()
         {
             var platforms = await _service.GetAllAsync();
@@ -72,7 +72,7 @@ namespace Microservices.PlatformService.Controllers
             }
             var platformReadDto = await _service.CreateAsync(platform);
             
-            // Send Async Message
+            // Send Sync Message
             try
             {
                 await _commandDataClient.SendPlatformToCommand(platformReadDto);
@@ -81,16 +81,16 @@ namespace Microservices.PlatformService.Controllers
             {
                 Console.WriteLine($"--> Could not send by HttpClient: {ex.Message}");
             }
-            // Send sync message to Message Bus
+            // Send async message to Message Bus
             try
             {
                 var platformPublishDto = _mapper.Map<PlatformPublishDto>(platformReadDto);
                 platformPublishDto.Event = "Platform_Published";
-                _messageBusClient.PublishNewPlatform(platformPublishDto);
+                _messageBusClient.PublishPlatform(platformPublishDto);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"--> Could not send synchronously: {e.Message}");
+                Console.WriteLine($"--> Could not send by RabbitMq: {e.Message}");
             }
             
             return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);
