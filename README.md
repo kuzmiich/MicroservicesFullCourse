@@ -1,8 +1,15 @@
 ﻿# Microservices course
 
+
+<img src="https://github.com/kuzmiich/MicroservicesFullCourse/tree/master/Readme/svg/get.svg">
 <img src="./Readme/svg/post.svg">
 <img src="Readme/svg/put.svg">
 <img src="/Readme/svg/delete.svg">
+
+![get](https://github.com/kuzmiich/MicroservicesFullCourse/Readme/svg/get.svg)
+![delete](Readme/svg/post.svg)
+![delete](./Readme/svg/put.svg)
+![delete](/Readme/svg/delete.svg)
 
 ## Table of Contents
 
