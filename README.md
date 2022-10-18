@@ -1,15 +1,15 @@
 ﻿# Microservices course
 
 
-<img src="https://github.com/kuzmiich/MicroservicesFullCourse/tree/master/Readme/svg/get.svg">
-<img src="./Readme/svg/post.svg">
-<img src="Readme/svg/put.svg">
-<img src="/Readme/svg/delete.svg">
+<img src="https://github.com/kuzmiich/MicroservicesFullCourse/tree/master/Readme/png/get.png">
+<img src="./Readme/png/post.png">
+<img src="Readme/png/put.png">
+<img src="/Readme/png/delete.png">
 
-![get](https://github.com/kuzmiich/MicroservicesFullCourse/Readme/svg/get.svg)
-![delete](Readme/svg/post.svg)
-![delete](./Readme/svg/put.svg)
-![delete](/Readme/svg/delete.svg)
+![get](https://github.com/kuzmiich/MicroservicesFullCourse/Readme/png/get.png)
+![delete](Readme/png/post.png)
+![delete](./Readme/png/put.png)
+![delete](/Readme/png/delete.png)
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@
 ### Platform Service. 1. Get all platform
 
 #### Request
-`<img src="/Readme/svg/get.svg"> All`
+`<img src="/Readme/png/get.png"> All`
 ```
 http://acme.com/api/platform/getAll
 ```
@@ -67,7 +67,7 @@ http://acme.com/api/platform/getAll
 
 ### Platform Service. 2. Get platform by id
 #### Request
-`<img src="/Readme/svg/get.svg"> platform with id=1`
+`<img src="/Readme/png/get.png"> platform with id=1`
 ```
 http://acme.com/api/platform/{id}
 ```
@@ -83,7 +83,7 @@ http://acme.com/api/platform/{id}
 
 ### Platform Service. 3. Post Platform to DB
 #### Request
-`<img src="/Readme/svg/post.svg"> platform`
+`<img src="/Readme/png/post.png"> platform`
 ```
 http://acme.com/api/platform/
 ```
@@ -109,7 +109,7 @@ body
 ### Platform Service. 4. Put Platform in DB
 
 #### Request
-`<img src="/Readme/svg/put.svg"> platform` 
+`<img src="/Readme/png/put.png"> platform` 
 ```
 http://acme.com/api/platform/
 ```
@@ -135,7 +135,7 @@ body
 ### Platform Service. 5. Delete Platform in DB
 
 #### Request
-`<img src="/Readme/svg/delete.svg"> platform by id=1`
+`<img src="/Readme/png/delete.png"> platform by id=1`
 ```
 http://acme.com/api/platform/{id}
 ```
@@ -154,7 +154,7 @@ http://acme.com/api/platform/{id}
 
 #### Request
 
-`<img src="/Readme/svg/get.svg"> all`
+`<img src="/Readme/png/get.png"> all`
 ```
 http://acme.com/api/c/platform/GetAll
 ```
@@ -181,7 +181,7 @@ http://acme.com/api/c/platform/GetAll
 
 #### Request
 
-`<img src="/Readme/svg/get.svg"> commands by platformId=1`
+`<img src="/Readme/png/get.png"> commands by platformId=1`
 ```
 http://acme.com/api/c/platform/{platformId}/command/GetAll
 ```
@@ -214,7 +214,7 @@ http://acme.com/api/c/platform/{platformId}/command/GetAll
 
 #### Request
 
-`<img src="./Readme/svg/get.svg"> command with commandId=1 & platformId=1`
+`<img src="./Readme/png/get.png"> command with commandId=1 & platformId=1`
 ```
 http://acme.com/api/c/platform/{platformId}/command/{commandId}
 ```
@@ -232,7 +232,7 @@ http://acme.com/api/c/platform/{platformId}/command/{commandId}
 ### Comman Service. 4. Post command with dependent platformId
 
 #### Request
-`<img src="./Readme/svg/post.svg"> command with platformId=1`
+`<img src="./Readme/png/post.png"> command with platformId=1`
 ```
 http://acme.com/api/c/platform/{platformId}/command
 ```
