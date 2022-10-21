@@ -12,32 +12,32 @@ namespace Microservices.CommandService.Controllers
     [ApiController]
     public class CommandController : ControllerBase
     {
-        private readonly ICommandRepository _repository;
+        private readonly ICommandService _service;
         private readonly IMapper _mapper;
 
-        public CommandController(ICommandRepository repository, IMapper mapper)
+        public CommandController(ICommandService service, IMapper mapper)
         {
-            _repository = repository;
+            _service = service;
             _mapper = mapper;
         }
 
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<CommandReadDto>>> GetCommandsForPlatform(int platformId)
         {
-            if (!_repository.PlatformExist(platformId))
+            if (!_service.PlatformExist(platformId))
                 return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database.");
 
-            var commands = await _repository.GetCommandsForPlatform(platformId);
+            var commands = await _service.GetCommandsForPlatform(platformId);
             return Ok(_mapper.Map<List<CommandReadDto>>(commands));
         }
 
         [HttpGet("{commandId:int}", Name = "GetCommandForPlatform")]
         public async Task<ActionResult<CommandReadDto>> GetCommandForPlatform(int platformId, int commandId)
         {
-            if (!_repository.PlatformExist(platformId))
+            if (!_service.PlatformExist(platformId))
                 return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database.");
 
-            var command = await _repository.GetCommand(platformId, commandId);
+            var command = await _service.GetCommand(platformId, commandId);
 
             if (command is null)
                 return NotFound($"Commands with this id:'{commandId}', doesn't exist in the Database.");
@@ -50,15 +50,12 @@ namespace Microservices.CommandService.Controllers
             CommandCreateDto commandCreateDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState.Select(x => x.Value.Errors)
-                    .Where(y => y.Count > 0)
-                    .ToList());
+                return BadRequest(ModelState);
 
-            if (!_repository.PlatformExist(platformId))
+            if (!_service.PlatformExist(platformId))
                 return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database");
 
-            var commandReadDto = await _repository.CreateCommand(platformId, commandCreateDto);
-            await _repository.SaveChanges();
+            var commandReadDto = await _service.CreateCommand(platformId, commandCreateDto);
 
             return CreatedAtRoute(nameof(GetCommandForPlatform),
                 new { platformId, commandId = commandReadDto.Id },

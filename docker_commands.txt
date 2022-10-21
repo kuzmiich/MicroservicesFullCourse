@@ -1,17 +1,22 @@
 # build image
 docker build -t opna/platformservice -f Dockerfile_PlatformService .
+docker build -t opna/commandservice -f Dockerfile_CommandService .
 
 # create container
 docker run -p 8080:80 opna/platformservice (image_id/image_name)
+docker run -p 8080:80 opna/commandservice (image_id/image_name)
 
 # stop
 docker stop opna/platformservice (image_id/image_name)
+docker stop opna/commandservice (image_id/image_name)
 
 # start
 docker start opna/platformservice (image_id/image_name)
+docker start opna/commandservice (image_id/image_name)
 
 # push to https://hub.docker.com/
 docker push opna/platformservice (image_id/image_name)
+docker push opna/commandservice (image_id/image_name)
 
 --- Clearing 
 

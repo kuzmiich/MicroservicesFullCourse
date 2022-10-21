@@ -12,18 +12,18 @@ namespace Microservices.CommandService.Controllers
     public class PlatformController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ICommandRepository _repository;
+        private readonly ICommandService _service;
 
-        public PlatformController(IMapper mapper, ICommandRepository repository)
+        public PlatformController(IMapper mapper, ICommandService service)
         {
             _mapper = mapper;
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<PlatformReadDto>>> GetPlatforms()
         {
-            var platforms = await _repository.GetAllPlatforms();
+            var platforms = await _service.GetAllPlatforms();
             
             return Ok(_mapper.Map<List<PlatformReadDto>>(platforms));
         }

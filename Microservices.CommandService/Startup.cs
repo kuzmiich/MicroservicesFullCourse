@@ -30,7 +30,7 @@ namespace Microservices.CommandService
         {
             AddDbContext(services);
             
-            services.AddScoped<ICommandRepository, CommandRepository>();
+            services.AddScoped<ICommandService, Services.CommandService>();
             services.AddSingleton<IEventProcessor, EventProcessor>();
             services.AddScoped<IPlatformDataClient, PlatformDataClient>();
             

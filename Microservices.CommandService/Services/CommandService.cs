@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Microservices.CommandService.Services
 {
-    public class CommandRepository : ICommandRepository
+    public class CommandService : ICommandService
     {
         private readonly CommandContext _context;
         private readonly IMapper _mapper;
 
-        public CommandRepository(CommandContext context, IMapper mapper)
+        public CommandService(CommandContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -49,7 +49,7 @@ namespace Microservices.CommandService.Services
 
         public async Task<CommandReadDto> CreateCommand(int platformId, CommandCreateDto commandCreateDto)
         {
-            if (commandCreateDto == null)
+            if (commandCreateDto is null)
                 throw new ArgumentNullException(nameof(commandCreateDto));
             
             var command = _mapper.Map<Command>(commandCreateDto);
@@ -59,20 +59,22 @@ namespace Microservices.CommandService.Services
             return _mapper.Map<CommandReadDto>(createdCommand);
         }
 
-        public Task CreatePlatform(PlatformCreateDto platformCreateDto)
+        public async Task<PlatformReadDto> CreatePlatform(PlatformCreateDto platformCreateDto)
         {
             if (platformCreateDto == null)
                 throw new ArgumentNullException(nameof(platformCreateDto));
 
             var platform = _mapper.Map<Platform>(platformCreateDto);
-            return _context.Platforms.AddAsync(platform).AsTask();
+            var createdPlatform = (await _context.Platforms.AddAsync(platform)).Entity;
+            await SaveChanges();
+            
+            return _mapper.Map<PlatformReadDto>(createdPlatform);
         }
-
         public bool ExternalPlatformExist(int externalPlatformId) =>
             _context.Platforms.Any(p => p.ExternalPlatformId == externalPlatformId);
         
         public bool PlatformExist(int platformId) => _context.Platforms.Any(p => p.Id == platformId);
         
-        public Task SaveChanges() => _context.SaveChangesAsync();
+        private Task SaveChanges() => _context.SaveChangesAsync();
     }
 }

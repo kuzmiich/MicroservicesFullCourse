@@ -43,14 +43,13 @@ namespace Microservices.CommandService.SyncDataServices.RabbitMQ.EventProcessing
         private async Task AddPlatform(string platformPublishedMessage)
         {
             await using var scope = _scopeFactory.CreateAsyncScope();
-            var repository = scope.ServiceProvider.GetRequiredService<ICommandRepository>();
+            var service = scope.ServiceProvider.GetRequiredService<ICommandService>();
             var platformPublishedDto = JsonSerializer.Deserialize<PlatformPublishDto>(platformPublishedMessage);
 
             var platformCreateDto = _mapper.Map<PlatformCreateDto>(platformPublishedDto);
-            if (!repository.ExternalPlatformExist(platformCreateDto.ExternalPlatformId))
+            if (!service.ExternalPlatformExist(platformCreateDto.ExternalPlatformId))
             {
-                await repository.CreatePlatform(platformCreateDto);
-                await repository.SaveChanges();
+                await service.CreatePlatform(platformCreateDto);
             }
         }
 

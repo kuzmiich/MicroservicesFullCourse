@@ -9,27 +9,26 @@ namespace Microservices.PlatformService.SyncDataServices.RabbitMQ
 {
     public class MessageBusClient : IMessageBusClient
     {
+        private readonly ConnectionFactory _factory;
         private IConnection _connection;
         private IModel _channel;
 
         public MessageBusClient(IConfiguration configuration)
         {
-            var factory = new ConnectionFactory()
+            _factory = new ConnectionFactory()
             {
                 HostName = configuration["RabbitMQHost"],
                 Port = int.Parse(configuration["RabbitMQPort"])
             };
-            
-            SetUpConnection(factory);
+            SetUpConnection(_factory);
             SetUpChannel();
-            _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
         }
 
         public void PublishPlatform(PlatformPublishDto platformPublishedDto)
         {
             var message  = JsonSerializer.Serialize(platformPublishedDto);
 
-            if (_connection.IsOpen)
+            if (_connection?.IsOpen != null)
             {
                 Console.WriteLine("--> RabbitMQ Connection Open, sending message...");
                 SendMessage(message);
@@ -66,8 +65,8 @@ namespace Microservices.PlatformService.SyncDataServices.RabbitMQ
         
         private void SetUpChannel()
         {
-            _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+            _channel = _connection?.CreateModel();
+            _channel?.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
         }
 
         private void SetUpConnection(IConnectionFactory factory)
@@ -75,10 +74,12 @@ namespace Microservices.PlatformService.SyncDataServices.RabbitMQ
             try
             {
                 _connection = factory.CreateConnection();
+                _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"--> Could not connect to the Message Bus: {ex.Message}");
+                return;
             }
             Console.WriteLine("--> Connected to MessageBus");
         }

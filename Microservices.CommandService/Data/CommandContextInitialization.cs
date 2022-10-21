@@ -23,7 +23,7 @@ namespace Microservices.CommandService.Data
             
             await SeedCommandContext(context, environment.IsProduction());
             
-            var repository = serviceScope.ServiceProvider.GetService<ICommandRepository>();
+            var repository = serviceScope.ServiceProvider.GetService<ICommandService>();
             var grpcClient = serviceScope.ServiceProvider.GetService<IPlatformDataClient>();
             var platforms = grpcClient?.ReturnAllPlatforms();
             
@@ -76,22 +76,21 @@ namespace Microservices.CommandService.Data
             }
         }
 
-        private static async Task SeedPlatformFromExternalService(ICommandRepository repository, IEnumerable<Platform> platforms)
+        private static async Task SeedPlatformFromExternalService(ICommandService service, IEnumerable<Platform> platforms)
         {
             Console.WriteLine("--> Seeding new platforms from external service...");
 
             foreach (var platform in platforms)
             {
-                if(!repository.ExternalPlatformExist(platform.ExternalPlatformId))
+                if(!service.ExternalPlatformExist(platform.ExternalPlatformId))
                 {
                     var platformCreateDto = new PlatformCreateDto()
                     {
                         ExternalPlatformId = platform.ExternalPlatformId,
                         Name = platform.Name
                     };
-                    await repository.CreatePlatform(platformCreateDto);
+                    await service.CreatePlatform(platformCreateDto);
                 }
-                await repository.SaveChanges();
             }
         }
     }
