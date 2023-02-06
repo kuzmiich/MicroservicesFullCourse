@@ -45,7 +45,7 @@ namespace Microservices.CommandService.SyncDataServices.RabbitMQ
             _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
             _queueName = _channel.QueueDeclare().QueueName;
             _channel.QueueBind(queue: _queueName, exchange: "trigger", routingKey: "");
-
+            
             Console.WriteLine("--> Listening on the Message Bus...");
         }
 
@@ -70,11 +70,6 @@ namespace Microservices.CommandService.SyncDataServices.RabbitMQ
             _channel.BasicConsume(_queueName, autoAck: true, consumer);
             
             return Task.CompletedTask;
-        }
-
-        private void RabbitMQ_ConnectionShutdown(object sender, ShutdownEventArgs e)
-        {
-            Console.WriteLine("--> Connection Shutdown");
         }
 
         public override void Dispose()

@@ -21,13 +21,14 @@ namespace Microservices.CommandService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<ActionResult<List<CommandReadDto>>> GetCommandsForPlatform(int platformId)
         {
             if (!_service.PlatformExist(platformId))
                 return NotFound($"Platform with this id:'{platformId}', doesn't exist in the Database.");
 
             var commands = await _service.GetCommandsForPlatform(platformId);
+            
             return Ok(_mapper.Map<List<CommandReadDto>>(commands));
         }
 

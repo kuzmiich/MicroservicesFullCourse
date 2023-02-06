@@ -32,12 +32,13 @@ namespace Microservices.CommandService.Data
 
         private static async Task SeedCommandContext(CommandContext context, bool isProd)
         {
-            if (isProd)
+            var isMigrated = (await context.Database.GetPendingMigrationsAsync()).Any();
+            if (!isProd && !isMigrated)
             {
                 try
                 {
                     await context.Database.MigrateAsync();
-                    Console.WriteLine("Data was successfully migrated.");
+                    Console.WriteLine("Data schema was successfully updated.");
                 }
                 catch (Exception ex)
                 {
@@ -47,7 +48,7 @@ namespace Microservices.CommandService.Data
 
             if (context.Platforms.Any() && context.Commands.Any())
             {
-                Console.WriteLine("--> We already have data");
+                Console.WriteLine("--> We already have data in the server!");
                 return;
             }
             
@@ -82,7 +83,7 @@ namespace Microservices.CommandService.Data
 
             foreach (var platform in platforms)
             {
-                if(!service.ExternalPlatformExist(platform.ExternalPlatformId))
+                if (!service.ExternalPlatformExist(platform.ExternalPlatformId))
                 {
                     var platformCreateDto = new PlatformCreateDto()
                     {

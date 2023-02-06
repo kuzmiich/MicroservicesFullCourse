@@ -4,19 +4,18 @@ namespace Microservices.CommandService.Dtos
 {
     public class CommandReadDto
     {
-        [Required]
         public int Id { get; set; }
         
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Incorrect 'PlatformId', length should be between 1 and int.MaxValue")]
+        [MinLength(1, ErrorMessage = $"Incorrect {nameof(PlatformId)} parameter, length should be less than 1")]
         public int PlatformId { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 4, ErrorMessage = "Incorrect 'HowToDoActivity', length should be between 4 and 50")]
+        [StringLength(100, MinimumLength = 4, ErrorMessage = $"Incorrect {nameof(HowToDoActivity)} parameter, length should be between 4 and 100")]
         public string HowToDoActivity { get; set; }
 
         [Required]
-        [StringLength(1000, MinimumLength = 4, ErrorMessage = "Incorrect 'CommandLine', length should be between 4 and 1000")]
+        [StringLength(1000, MinimumLength = 4, ErrorMessage = $"Incorrect ${nameof(CommandLine)} parameter, length should be between 4 and 1000")]
         public string CommandLine { get; set; }
     }
 }

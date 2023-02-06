@@ -52,9 +52,9 @@ namespace Microservices.CommandService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", 
                     "KuzmichInc.Microservices.CommandsService v1"));
-            }
 
-            //app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 

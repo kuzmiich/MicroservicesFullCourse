@@ -20,7 +20,7 @@ namespace Microservices.CommandService.Controllers
             _service = service;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet]
         public async Task<ActionResult<List<PlatformReadDto>>> GetPlatforms()
         {
             var platforms = await _service.GetAllPlatforms();
