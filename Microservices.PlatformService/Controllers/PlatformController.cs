@@ -42,10 +42,11 @@ namespace Microservices.PlatformService.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PlatformReadDto>> GetPlatformById(int id)
         {
-            PlatformReadDto platform;
             try
             {
-                platform = await _service.GetByIdAsync(id);
+                var platform = await _service.GetByIdAsync(id);
+
+                return Ok(platform);
             }
             catch (Exception e)
             {
@@ -59,8 +60,6 @@ namespace Microservices.PlatformService.Controllers
                         $"Exception type - {nameof(BadHttpRequestException)} \nException message - {e.Message}")
                 };
             }
-
-            return Ok(platform);
         }
 
         [HttpPost]
@@ -107,17 +106,16 @@ namespace Microservices.PlatformService.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            PlatformReadDto platformReadDto;
             try
             {
-                platformReadDto = await _service.UpdateAsync(platform);
+                var platformReadDto = await _service.UpdateAsync(platform);
+                return Ok(platformReadDto);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
 
-            return Ok(platformReadDto);
         }
 
         [HttpDelete("{id:int}")]
@@ -126,10 +124,13 @@ namespace Microservices.PlatformService.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PlatformReadDto>> DeletePlatform(int id)
         {
-            PlatformReadDto platformReadDto;
             try
             {
-                platformReadDto = await _service.GetByIdAsync(id);
+                var platformReadDto = await _service.GetByIdAsync(id);
+
+                await _service.DeleteAsync(id);
+
+                return Ok(platformReadDto);
             }
             catch (Exception e)
             {
@@ -142,10 +143,6 @@ namespace Microservices.PlatformService.Controllers
                     _ => BadRequest($"Exception type - {nameof(Exception)} \nException message - {e.Message}")
                 };
             }
-
-            await _service.DeleteAsync(id);
-
-            return Ok(platformReadDto);
         }
     }
 }

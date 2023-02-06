@@ -23,12 +23,12 @@ namespace Microservices.PlatformService.Data
         private static async Task SeedPlatformAsync(PlatformsContext context, bool isProd)
         {
             var isMigrated = (await context.Database.GetPendingMigrationsAsync()).Any();
-            if (!isProd && isMigrated)
+            if (!isProd && !isMigrated)
             {
                 try
                 {
                     await context.Database.MigrateAsync();
-                    Console.WriteLine("Data was successfully migrated.");
+                    Console.WriteLine("Data schema was successfully updated.");
                 }
                 catch (Exception ex)
                 {

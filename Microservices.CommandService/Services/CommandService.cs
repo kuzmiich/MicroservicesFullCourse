@@ -33,7 +33,6 @@ namespace Microservices.CommandService.Services
             var orderedCommands = await _context.Commands
                 .Where(c => c.PlatformId.Equals(platformId))
                 .OrderBy(c => c.Platform.Name)
-                .AsQueryable()
                 .ToListAsync();
             
             return _mapper.Map<List<CommandReadDto>>(orderedCommands) ?? new List<CommandReadDto>();
