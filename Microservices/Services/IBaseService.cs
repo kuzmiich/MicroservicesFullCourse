@@ -1,6 +1,6 @@
 ﻿namespace Microservices.Services
 {
-    public interface IUnitOfWorkService<TReadDto, TCreateDto> : 
+    public interface IBaseService<TReadDto, in TCreateDto> : 
         IDtoService<TReadDto, TCreateDto>, 
         IDtoServiceAsync<TReadDto, TCreateDto>
         where TReadDto : class

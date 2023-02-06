@@ -8,7 +8,7 @@ namespace Microservices.PlatformService.Services
 {
     public class PlatformBusinessService : BaseCrudService<PlatformReadDto, PlatformCreateDto, Platform>
     {
-        public PlatformBusinessService(IUnitOfWorkRepository<Platform> repository, IMapper mapper) 
+        public PlatformBusinessService(IBaseRepository<Platform> repository, IMapper mapper) 
             : base(repository, mapper)
         {
         }

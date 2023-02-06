@@ -37,8 +37,8 @@ namespace Microservices.PlatformService
         public void ConfigureServices(IServiceCollection services)
         {
             AddDbContext(services);
-            services.AddScoped<IUnitOfWorkRepository<Platform>, PlatformRepository>();
-            services.AddScoped<IUnitOfWorkService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
+            services.AddScoped<IBaseRepository<Platform>, PlatformRepository>();
+            services.AddScoped<IBaseService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddSingleton<IMessageBusClient, MessageBusClient>();
 

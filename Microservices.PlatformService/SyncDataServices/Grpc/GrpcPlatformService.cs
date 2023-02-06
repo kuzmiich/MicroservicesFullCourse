@@ -11,9 +11,9 @@ namespace Microservices.PlatformService.SyncDataServices.Grpc
     public class GrpcPlatformService : GrpcPlatform.GrpcPlatformBase
     {
         private readonly IMapper _mapper;
-        private readonly IUnitOfWorkRepository<Platform> _repository;
+        private readonly IBaseRepository<Platform> _repository;
 
-        public GrpcPlatformService(IUnitOfWorkRepository<Platform> repository, IMapper mapper)
+        public GrpcPlatformService(IBaseRepository<Platform> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

@@ -17,10 +17,10 @@ namespace Microservices.PlatformService.Controllers
     {
         private readonly ICommandDataClient _commandDataClient;
         private readonly IMessageBusClient _messageBusClient;
-        private readonly IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> _service;
+        private readonly IBaseService<PlatformReadDto, PlatformCreateDto> _service;
         private readonly IMapper _mapper;
 
-        public PlatformController(IUnitOfWorkService<PlatformReadDto, PlatformCreateDto> service,
+        public PlatformController(IBaseService<PlatformReadDto, PlatformCreateDto> service,
             ICommandDataClient commandDataClient, IMessageBusClient messageBusClient, IMapper mapper)
         {
             _service = service;

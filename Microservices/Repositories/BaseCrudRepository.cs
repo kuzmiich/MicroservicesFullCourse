@@ -6,7 +6,7 @@ using Microservices.Helpers;
 
 namespace Microservices.Repositories
 {
-    public abstract class BaseCrudRepository<TContext, TEntity> : IUnitOfWorkRepository<TEntity>
+    public abstract class BaseCrudRepository<TContext, TEntity> : IBaseRepository<TEntity>
         where TContext : DbContext
         where TEntity : class
     {
