@@ -39,6 +39,7 @@ namespace Microservices.PlatformService
             AddDbContext(services);
             services.AddScoped<IBaseRepository<Platform>, PlatformRepository>();
             services.AddScoped<IBaseService<PlatformReadDto, PlatformCreateDto>, PlatformBusinessService>();
+            
             services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
             services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
@@ -65,10 +66,10 @@ namespace Microservices.PlatformService
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Microservices.Platform v1"));
+
+                app.UseHttpsRedirection();
             }
-
-            //app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

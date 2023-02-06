@@ -7,13 +7,6 @@ namespace Microservices.PlatformService
 {
     public class Program
     {
-        private static IWebHostEnvironment _env;
-
-        public Program(IWebHostEnvironment env)
-        {
-            _env = env;
-        }
-
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();

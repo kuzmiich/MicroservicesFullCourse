@@ -9,18 +9,17 @@ namespace Microservices.PlatformService.SyncDataServices.RabbitMQ
 {
     public class MessageBusClient : IMessageBusClient
     {
-        private readonly ConnectionFactory _factory;
         private IConnection _connection;
         private IModel _channel;
 
         public MessageBusClient(IConfiguration configuration)
         {
-            _factory = new ConnectionFactory()
+            var factory = new ConnectionFactory()
             {
                 HostName = configuration["RabbitMQHost"],
                 Port = int.Parse(configuration["RabbitMQPort"])
             };
-            SetUpConnection(_factory);
+            SetUpConnection(factory);
             SetUpChannel();
         }
 

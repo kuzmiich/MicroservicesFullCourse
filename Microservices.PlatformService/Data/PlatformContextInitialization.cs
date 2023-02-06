@@ -22,7 +22,8 @@ namespace Microservices.PlatformService.Data
 
         private static async Task SeedPlatformAsync(PlatformsContext context, bool isProd)
         {
-            if (isProd)
+            var isMigrated = (await context.Database.GetPendingMigrationsAsync()).Any();
+            if (!isProd && isMigrated)
             {
                 try
                 {
@@ -45,11 +46,10 @@ namespace Microservices.PlatformService.Data
                     new Platform() { Name = "Kubernetes", Publisher="Cloud Native Computing Foundation", Cost = "Free"}
                 );
                 await context.SaveChangesAsync();
+                return;
             }
-            else
-            {
-                Console.WriteLine("--> We already have data");
-            }
+            
+            Console.WriteLine("--> We already have data in the server!");
         }
     }
 }

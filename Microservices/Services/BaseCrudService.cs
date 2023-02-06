@@ -21,6 +21,8 @@ namespace Microservices.Services
             Mapper = mapper;
         }
 
+        #region Async Queries & Commands
+
         public virtual async Task<List<TReadDto>> GetAllAsync()
         {
             var entities = await Repository.GetAll().ToListAsync();
@@ -62,6 +64,10 @@ namespace Microservices.Services
             await Repository.SaveChangesAsync();
         }
 
+        #endregion
+
+        #region Async Queries & Commands
+
         public List<TReadDto> GetAll()
         {
             var entities = Repository.GetAll();
@@ -102,7 +108,8 @@ namespace Microservices.Services
             Repository.SaveChanges();
         }
 
-
+        #endregion
+        
         #region Dispose Service
 
         public ValueTask DisposeAsync() => Repository.DisposeAsync();

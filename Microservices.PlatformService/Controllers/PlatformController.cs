@@ -117,7 +117,7 @@ namespace Microservices.PlatformService.Controllers
                 return BadRequest(e.Message);
             }
 
-            return CreatedAtRoute(nameof(GetPlatformById), new { platformReadDto.Id }, platformReadDto);
+            return Ok(platformReadDto);
         }
 
         [HttpDelete("{id:int}")]
@@ -145,7 +145,7 @@ namespace Microservices.PlatformService.Controllers
 
             await _service.DeleteAsync(id);
 
-            return CreatedAtRoute(nameof(GetPlatformById), new { Id = id }, platformReadDto);
+            return Ok(platformReadDto);
         }
     }
 }
